@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Emotion Detection</title>
+    {% load static %}
+{#    <link rel="stylesheet" href="{% static 'css/style.css' %}">#}
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+{#    <script src="{% static 'js/code.js' %}"></script>#}
+</head>
+<style>
+    h1 {
+        text-align: center;
+        font-size: 3em;
+        font-family: 'Open Sans', sans-serif;
+        padding-top: 100px;
+    }
+    p {
+        text-align: center;
+        font-size: 2em;
+        font-family: 'Open Sans', sans-serif;
+    }
+</style>
+
+<body>
+<div id="main">
+    {% block content %}
+
+    {% endblock content %}
+</div>
+
+</body>
+</html>

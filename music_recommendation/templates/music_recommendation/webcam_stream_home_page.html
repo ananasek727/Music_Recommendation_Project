@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Emotion Recognition</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="author" content="Justyna Pokora, Błażej Misiura, Piotr Mozeluk" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #a1d3ff;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .model-links {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .model-link {
+      margin: 0 10px;
+      text-decoration: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Emotion Recognition <br> <h3 style="text-align: center">choose machine learning model: </h3></h1>
+
+  <!-- Model Links -->
+  <div class="model-links">
+    <a href="{% url 'webcam_stream' pk='CNN' %}" class="model-link">CNN</a>
+    <a href="{% url 'webcam_stream' pk='MobileNetV3Large'%}" class="model-link">MobileNetV3Large</a>
+    <a href="{% url 'webcam_stream' pk='ResNet50'%}" class="model-link">ResNet50</a>
+  </div>
+
+</body>
+</html>
