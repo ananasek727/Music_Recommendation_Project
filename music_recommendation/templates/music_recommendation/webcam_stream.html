@@ -39,23 +39,10 @@
       border: none;
       border-radius: 4px;
       cursor: pointer;
+      width: 100px;
     }
 
-    .emotion-columns {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
-    }
 
-    .emotion-column {
-      flex-basis: 50%;
-    }
-
-    #emotion-list {
-      list-style-type: none;
-      padding: 0;
-      margin: 0;
-    }
 
     #emotion-list li {
       display: flex;
@@ -73,12 +60,14 @@
   <h1>Emotion Recognition </br> {{ request.resolver_match.kwargs.pk }}</h1>
 
   <!-- Camera Image Window -->
+  {% if stream_started %}
   <div class="camera-window">
-      {% if stream_started %}
+
       <img src="{% url 'stream_output' pk=request.resolver_match.kwargs.pk %}" alt="Can't stream :(">
-      {% else %}
-      {% endif %}
+
   </div>
+  {% else %}
+  {% endif %}
 
   <!-- Start Button -->
   <div>
@@ -86,7 +75,11 @@
             <a href="{% url 'stop_streaming' pk=request.resolver_match.kwargs.pk %}" style="text-decoration: none; margin-right: 10px"><button type="button" class="start-button">Stop</button></a>
   {% else %}
             <p style="text-align: center">Average number of fps: {{ fps_number }}</p>
-            <a href="{% url 'start_streaming' pk=request.resolver_match.kwargs.pk %}" style="text-decoration: none; margin-right: 10px"><button type="button" class="start-button">Launch camera</button></a>
+
+
+            <a href="{% url 'start_streaming' pk=request.resolver_match.kwargs.pk %}" style="text-decoration: none; margin-right: 10px; width: 100px"><button type="button" class="start-button">Launch camera</button></a>
+            <a href="" style="text-decoration: none; margin-right: 10px; width: 100px"><button type="button" class="start-button">Loan Image</button></a>
+
   {% endif %}
             <a href="{% url 'webcam_stream_home_page' %}" style="text-decoration: none"><button type="button" class="start-button">Change model</button></a>
   </div>
