@@ -1,0 +1,128 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Emotion Recognition</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="author" content="Justyna Pokora, Błażej Misiura, Piotr Mozeluk" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #a1d3ff;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .camera-window {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #ddd;
+      width: 640px;
+      height: 480px;
+      margin: 20px auto;
+    }
+
+    .start-button {
+      display: block;
+      margin: 0 auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100px;
+    }
+
+
+
+    #emotion-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 0;
+    }
+
+    #emotion-list li span:first-child {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+    <h1>Image Upload</h1>
+
+    <input type="file" id="imageInput">
+    <button id="uploadButton">Upload</button>
+    <button id="deleteAllButton">Delete All Images</button>
+
+    <div id="imagePreview"></div>
+
+    <script>
+        document.getElementById('imageInput').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const imagePreview = document.getElementById('imagePreview');
+                    imagePreview.innerHTML = '<img src="' + event.target.result + '" alt="Image Preview" width="200">';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('uploadButton').addEventListener('click', function () {
+            const fileInput = document.getElementById('imageInput');
+            const file = fileInput.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('image', file);
+
+                fetch('/images/', {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Image uploaded successfully.');
+                })
+                .catch(error => {
+                    console.error('Error uploading image:', error);
+                });
+            } else {
+                alert('Please select an image to upload.');
+            }
+        });
+        document.getElementById('deleteAllButton').addEventListener('click', function () {
+    if (confirm('Are you sure you want to delete all images?')) {
+        fetch('/images/delete-all/', {
+            method: 'DELETE',
+        })
+        .then(response => {
+            if (response.status === 204) {
+                // All images successfully deleted
+                alert('All images deleted successfully.');
+                // Remove all image elements from the DOM
+                document.querySelectorAll('.image-container').forEach(container => {
+                    container.remove();
+                });
+            } else {
+                alert('Error deleting images.');
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting images:', error);
+        });
+    }
+});
+
+    </script>
+</body>
+</html>

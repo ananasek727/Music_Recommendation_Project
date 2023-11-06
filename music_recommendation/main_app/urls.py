@@ -5,8 +5,12 @@ from django.urls import path, re_path
 # urlpatterns = [
 #     path('', HomePageView.as_view(), name='home_page'),
 # ]
-
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from . import views
+
+router = DefaultRouter()
+router.register(r'images', views.ImageUploadViewSet)
 
 
 urlpatterns = [
@@ -16,4 +20,8 @@ urlpatterns = [
     re_path(r'^webcam_stream/(?P<pk>[\w]+)/stream/$', views.stream, name='stream_output'),
     re_path(r'^webcam_stream/(?P<pk>[\w]+)/started/$', views.start_stream, name='start_streaming'),
     re_path(r'^webcam_stream/(?P<pk>[\w]+)/stopped/$', views.stop_stream, name='stop_streaming'),
+    path('image-upload/', views.ImageUploadView.as_view(), name='image_upload'),
+    path('images/delete-all/', views.DeleteAllImagesView.as_view(), name='delete_all_images'),
+
 ]
+urlpatterns += router.urls

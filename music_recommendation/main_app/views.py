@@ -8,6 +8,9 @@ import tensorflow as tf
 from django.http import StreamingHttpResponse, HttpResponse
 from django.template import loader
 from imutils.video import FPS
+from rest_framework import viewsets
+from .models import ImageUpload
+from .serializers import ImageUploadSerializer
 
 
 # Create your views here.
@@ -240,3 +243,25 @@ def process_frame(frame_in):
             frame_in, text1, (startX, y1), tFace, tScale, tColor, tThickness
         )
     return frame_in
+
+
+class ImageUploadViewSet(viewsets.ModelViewSet):
+    queryset = ImageUpload.objects.all()
+    serializer_class = ImageUploadSerializer
+
+from django.views.generic import TemplateView
+
+class ImageUploadView(TemplateView):
+    template_name = "music_recommendation/image_upload.html"
+
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+class DeleteAllImagesView(APIView):
+    def delete(self, request):
+        try:
+            ImageUpload.objects.all().delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
