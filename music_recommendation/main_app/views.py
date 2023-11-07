@@ -11,8 +11,10 @@ from imutils.video import FPS
 from rest_framework import viewsets
 from .models import ImageUpload
 from .serializers import ImageUploadSerializer
-
-
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from django.views.generic import TemplateView
 # Create your views here.
 
 
@@ -249,14 +251,10 @@ class ImageUploadViewSet(viewsets.ModelViewSet):
     queryset = ImageUpload.objects.all()
     serializer_class = ImageUploadSerializer
 
-from django.views.generic import TemplateView
 
 class ImageUploadView(TemplateView):
     template_name = "music_recommendation/image_upload.html"
 
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.views import APIView
 
 class DeleteAllImagesView(APIView):
     def delete(self, request):
