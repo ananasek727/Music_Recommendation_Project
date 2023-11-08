@@ -39,7 +39,26 @@ nav {
     font-size: xx-large;
 }
 
+#container {
+    display: flex;
+    align-content: space-around;
+}
 
+a {
+    text-decoration: none;
+    --glow-color: rgb(217, 176, 255);
+    --glow-spread-color: rgba(191, 123, 255, 0.781);
+    --enhanced-glow-color: rgb(231, 206, 255);
+    --btn-color: rgb(100, 61, 136);
+     color: var(--glow-color);
+     text-shadow: 0 0 .5em var(--glow-color);
+    font-size: 15px;
+    font-weight: bold;
+
+}
+a:hover {
+     color: var(--btn-color);
+}
 
 
 
