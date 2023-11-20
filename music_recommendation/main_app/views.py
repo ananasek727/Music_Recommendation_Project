@@ -88,19 +88,19 @@ def start_stream(request, pk):
 
 
 def stop_stream(request, pk):
-    global vc, fps
-
+    # global vc, fps
+    global vc
     # double-checking whether the stream was launched, closing the vc
     if isinstance(vc, cv2.VideoCapture):
         vc.release()
-    fps.stop()
+    # fps.stop()
     # print the average fpg to the console
-    fps_num = fps.fps() if fps.fps() > 0 else 0
-    print("Average number of fps: ", fps_num)
+    # fps_num = fps.fps() if fps.fps() > 0 else 0
+    # print("Average number of fps: ", fps_num)
     template = loader.get_template('music_recommendation/choose_parameters.html')
     context = {
         'stream_started': False,
-        'fps_number': fps_num
+        # 'fps_number': fps_num
     }
     return HttpResponse(template.render(context, request))
 

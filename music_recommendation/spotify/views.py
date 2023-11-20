@@ -44,7 +44,7 @@ def spotify_callback(request, format=None):
     update_or_create_user_tokens(
         request.session.session_key, access_token, token_type, expires_in, refresh_token)
 
-    return redirect('main_app:parameter_main')
+    return redirect('main_app:parameter_main', pk="camera")
 
 
 class IsAuthenticated(APIView):

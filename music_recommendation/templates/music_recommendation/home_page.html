@@ -6,10 +6,10 @@
     </div>
     <div class="buttons_home">
         <div>
-        <button onclick="location.href='{% url "start_streaming" pk="camera"%}'">Launch Camera</button>
+        <button onclick="goToCameraPage()">Launch Camera</button>
         </div>
         <div>
-        <button onclick="location.href='{% url "parameter_main" pk="image_upload"%}'">Load Image</button>
+        <button onclick="location.href='{% url "main_app:parameter_main" pk="image_upload"%}'">Load Image</button>
         </div>
     </div>
 

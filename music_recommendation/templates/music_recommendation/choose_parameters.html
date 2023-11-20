@@ -6,7 +6,7 @@
             <div style="height: 50%; padding: 5px">
                 {% if stream_started %}
                     <div class="camera-window">
-                        <img src="{% url 'stream_output' pk="camera" %}" alt="Can't stream :(">
+                        <img src="{% url 'main_app:stream_output' pk="camera" %}" alt="Can't stream :(">
                     </div>
                 {% else %}
                 {% endif %}
@@ -46,11 +46,11 @@
             </div>
             <div class="buttons_home" style="height: 20%; gap: 2em">
                 {% if stream_started %}
-                    <a href="{% url 'stop_streaming' pk="camera" %}" style="text-decoration: none; height: 5em">
+                    <a href="{% url 'main_app:stop_streaming' pk="camera" %}" style="text-decoration: none; height: 5em">
                         <button type="button" class="start-button">Stop</button>
                     </a>
                 {% else %}
-                    <a href="{% url 'start_streaming' pk="camera" %}" style="text-decoration: none; height: 5em">
+                    <a href="{% url 'main_app:start_streaming' pk="camera" %}" style="text-decoration: none; height: 5em">
                         <button type="button" class="start-button">Launch camera</button>
                     </a>
                 {% endif %}
