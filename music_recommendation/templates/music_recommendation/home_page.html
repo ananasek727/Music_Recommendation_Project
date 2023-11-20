@@ -4,12 +4,12 @@
     <div id="description">
         Description
     </div>
-    <div id="buttons_home">
+    <div class="buttons_home">
         <div>
-        <button>Lunch Camera</button>
+        <button onclick="location.href='{% url "start_streaming" pk="camera"%}'">Launch Camera</button>
         </div>
         <div>
-        <button>Load Image</button>
+        <button onclick="location.href='{% url "parameter_main" pk="image_upload"%}'">Load Image</button>
         </div>
     </div>
 

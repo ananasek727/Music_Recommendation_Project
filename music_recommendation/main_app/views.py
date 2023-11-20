@@ -58,9 +58,11 @@ chosenModel = ""
 def home_page(request):
     return render(request, 'music_recommendation/home_page.html', None)
 
+def parameterView(request, pk):
+    return render(request, 'music_recommendation/choose_parameters.html', context={ "pk": pk})
 
-def webcam_stream_home_page(request):
-    return render(request, 'music_recommendation/webcam_stream_home_page.html')
+# def webcam_stream_home_page(request):
+#     return render(request, 'music_recommendation/webcam_stream_home_page.html')
 
 
 def webcam_stream(request, pk):
@@ -78,7 +80,7 @@ def stream(request, pk):
 
 
 def start_stream(request, pk):
-    template = loader.get_template('music_recommendation/webcam_stream.html')
+    template = loader.get_template('music_recommendation/choose_parameters.html')
     context = {
         'stream_started': True
     }
@@ -95,7 +97,7 @@ def stop_stream(request, pk):
     # print the average fpg to the console
     fps_num = fps.fps() if fps.fps() > 0 else 0
     print("Average number of fps: ", fps_num)
-    template = loader.get_template('music_recommendation/webcam_stream.html')
+    template = loader.get_template('music_recommendation/choose_parameters.html')
     context = {
         'stream_started': False,
         'fps_number': fps_num
@@ -219,17 +221,18 @@ def process_frame(frame_in):
         # face_image = face_image.reshape((1,) + face_image.shape)
 
         # use selected model
-        if chosenModel == "CNN":
+        # if chosenModel == "CNN":
+        if True:
                 face_image = cv2.resize(face_image, (48, 48))
                 face_image = cv2.cvtColor(face_image, cv2.COLOR_BGR2GRAY)
                 face_image = face_image.reshape((1, 48, 48, 1))
                 predict_emotion_model = predicted_emotion(emotionModel_CNN.predict(x=face_image, verbose=0))
-        elif chosenModel == "MobileNetV3Large":
-                face_image = np.expand_dims(face_image, axis=0)
-                predict_emotion_model = predicted_emotion(emotionModel_MobileNetV3Large.predict(x=face_image, verbose=0))
-        elif chosenModel == "ResNet50":
-                face_image = np.expand_dims(face_image, axis=0)
-                predict_emotion_model = predicted_emotion(emotionModel_ResNet50.predict(x=face_image, verbose=0))
+        # elif chosenModel == "MobileNetV3Large":
+        #         face_image = np.expand_dims(face_image, axis=0)
+        #         predict_emotion_model = predicted_emotion(emotionModel_MobileNetV3Large.predict(x=face_image, verbose=0))
+        # elif chosenModel == "ResNet50":
+        #         face_image = np.expand_dims(face_image, axis=0)
+        #         predict_emotion_model = predicted_emotion(emotionModel_ResNet50.predict(x=face_image, verbose=0))
 
 
         #predict_emotion_model_1 = emotionModel_1.predict(x=face_image, verbose=0)[0][0]
