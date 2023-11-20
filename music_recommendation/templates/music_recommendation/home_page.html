@@ -1,10 +1,16 @@
 {% extends 'music_recommendation/main.html' %}
 {% block content %}
 
-    <h1>Project of Emotion Detection Application</h1>
-    <p>Błażej Misiura</p>
-    <p>Piotr Możeluk</p>
-    <p>Justyna Pokora</p>
-
+    <div id="description">
+        Description
+    </div>
+    <div class="buttons_home">
+        <div>
+        <button onclick="location.href='{% url "start_streaming" pk="camera"%}'">Launch Camera</button>
+        </div>
+        <div>
+        <button onclick="location.href='{% url "parameter_main" pk="image_upload"%}'">Load Image</button>
+        </div>
+    </div>
 
 {% endblock content %}

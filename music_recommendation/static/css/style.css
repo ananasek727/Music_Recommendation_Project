@@ -2,7 +2,135 @@ h1 {
     text-align: center;
     font-size: 3em;
 }
+
 p {
     text-align: center;
     font-size: 2em;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: grey;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    margin: 2em 2em 1em 2em;
+    height: 2em
+
+}
+
+#logo {
+    border: black solid 1px;
+    width: 4em;
+}
+
+#main {
+    margin: 0 0 0 0;
+}
+
+.buttons_home {
+    display: flex;
+    justify-content: center;
+    gap: 10em;
+}
+
+#parameters_main {
+    display: flex;
+    justify-content: center;
+    gap: 5em;
+    margin: 0 0 0 0;
+}
+
+.box {
+    margin-top: 3em;
+    height: 40em;
+    width: 45.4%;
+
+    --glow-color: rgb(217, 176, 255);
+    --glow-spread-color: rgba(191, 123, 255, 0.781);
+
+    border: .25em solid var(--glow-color);
+    color: black;
+    background-color: var(--btn-color);
+    border-radius: 1em;
+    outline: none;
+    box-shadow: 0 0 1em .25em var(--glow-color),
+    0 0 4em 1em var(--glow-spread-color),
+    inset 0 0 .75em .25em var(--glow-color);
+    position: relative;
+
+
+}
+
+#description {
+    height: 10em;
+    text-align: center;
+    font-size: xx-large;
+}
+
+.camera-window {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 0 0 0;
+    height: 100%;
+}
+
+img {
+    padding: 5px 5px 5px 5px;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+button {
+    --glow-color: rgb(217, 176, 255);
+    --glow-spread-color: rgba(191, 123, 255, 0.781);
+    --enhanced-glow-color: rgb(231, 206, 255);
+    --btn-color: rgb(100, 61, 136);
+    border: .25em solid var(--glow-color);
+    padding: 1em 3em;
+    color: var(--glow-color);
+    font-size: 15px;
+    font-weight: bold;
+    background-color: var(--btn-color);
+    border-radius: 1em;
+    outline: none;
+    box-shadow: 0 0 1em .25em var(--glow-color),
+    0 0 4em 1em var(--glow-spread-color),
+    inset 0 0 .75em .25em var(--glow-color);
+    text-shadow: 0 0 .5em var(--glow-color);
+    position: relative;
+    transition: all 0.3s;
+}
+
+button::after {
+    pointer-events: none;
+    content: "";
+    position: absolute;
+    top: 120%;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: var(--glow-spread-color);
+    filter: blur(2em);
+    opacity: .7;
+    transform: perspective(1.5em) rotateX(35deg) scale(1, .6);
+}
+
+button:hover {
+    color: var(--btn-color);
+    background-color: var(--glow-color);
+    box-shadow: 0 0 1em .25em var(--glow-color),
+    0 0 4em 2em var(--glow-spread-color),
+    inset 0 0 .75em .25em var(--glow-color);
+}
+
+button:active {
+    box-shadow: 0 0 0.6em .25em var(--glow-color),
+    0 0 2.5em 2em var(--glow-spread-color),
+    inset 0 0 .5em .25em var(--glow-color);
 }
