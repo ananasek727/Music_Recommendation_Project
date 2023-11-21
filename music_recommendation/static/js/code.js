@@ -26,7 +26,7 @@ function goToCameraPage()
     authenticateSpotify();
 }
 function getCurrentSong() {
-    fetch("http://127.0.0.1:8000/spotify/current-song")
+    fetch("/spotify/current-song")
       .then((response) => {
         if (!response.ok) {
           return {};
@@ -40,3 +40,4 @@ function getCurrentSong() {
           document.getElementById("albumPhoto").src = data.image_url;
       });
   }
+setInterval(getCurrentSong, 100);
