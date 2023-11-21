@@ -46,21 +46,40 @@
             </div>
             <div class="buttons_home" style="height: 20%; gap: 2em">
                 {% if stream_started %}
-                    <a href="{% url 'main_app:stop_streaming' pk="camera" %}" style="text-decoration: none; height: 5em">
+                    <a href="{% url 'main_app:stop_streaming' pk="camera" %}"
+                       style="text-decoration: none; height: 5em">
                         <button type="button" class="start-button">Stop</button>
                     </a>
                 {% else %}
-                    <a href="{% url 'main_app:start_streaming' pk="camera" %}" style="text-decoration: none; height: 5em">
+                    <a href="{% url 'main_app:start_streaming' pk="camera" %}"
+                       style="text-decoration: none; height: 5em">
                         <button type="button" class="start-button">Launch camera</button>
                     </a>
                 {% endif %}
-                <a href="" style="text-decoration: none; height: 5em">
-                    <button type="button" class="start-button">Get Recommendation</button>
+                <a href=""  style="text-decoration: none; height: 5em">
+                    <button onclick="getCurrentSong()" type="button" class="start-button">Get Recommendation</button>
                 </a>
             </div>
         </div>
         <div class="box">
-            asd
+            <div class="music-player-card">
+                <div class="flex-container">
+                    <div class="album-art">
+                        <img src="" height="100%" width="100%" alt="Album Art" id="albumPhoto">
+                    </div>
+                    <div class="song-details">
+                        <h5 id="title"></h5>
+                        <p style="color: #999;" id="artist"></p>
+{#                        <div>#}
+{#                            <button id="playPauseButton">${mockData.is_playing ? 'Pause' : 'Play'}</button>#}
+{#                            <button>Skip Next</button>#}
+{#                        </div>#}
+                    </div>
+                </div>
+{#                <div class="progress-bar-container">#}
+{#                    <div id="progressBar" class="progress-bar" style="width: ${songProgress}%;"></div>#}
+{#                </div>#}
+            </div>
         </div>
     </div>
 {% endblock content %}
