@@ -2,18 +2,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width" charset="UTF-8">
     <title>Music recommendation</title>
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
-    <script src="{% static 'js/code.js' %}"></script>
+
 </head>
 
 <body>
+    <script src="{% static 'js/code.js' %}"></script>
+
 <nav>
     <div id="logo">
         LOGO
     </div>
-    <div onclick="location.href='{% url "home_page" %}'" id="home_button">
+    <div onclick="location.href='{% url "main_app:home_page" %}'" id="home_button">
         <button>Home</button>
     </div>
 </nav>

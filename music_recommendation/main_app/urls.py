@@ -9,10 +9,12 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views
 
+app_name = 'main_app'
+
+
 router = DefaultRouter()
 router.register(r'images', views.ImageUploadViewSet)
 
-#app_name = 'main_app'
 
 urlpatterns = [
     path('', views.home_page, name='home_page'),
