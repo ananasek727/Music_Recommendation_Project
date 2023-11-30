@@ -1,0 +1,36 @@
+.homePageFrame {
+    height: 93vh;
+    width: 100vw;
+    background-color: aqua;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.homePageBox {
+    min-height: 70vh;
+    max-height: 70vh;
+    min-width: 70vw;
+    max-width: 70vw;
+    background-color: azure;
+    border-radius: 5px;
+    border: 2px solid #d5d5d5;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    position: relative;
+}
+
+.homePageDescription {
+    
+}
+
+.homePageButton {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding: 5px 10px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    border-radius: 5px;
+    border: 2px solid #d5d5d5;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}

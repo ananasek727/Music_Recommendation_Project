@@ -1,0 +1,18 @@
+.WebCamFrameBox {
+    min-width: 100%;
+    max-width: 100%;
+    min-height: 30%;
+    max-height: 30%;
+}
+
+.webCamFrameButton {
+    padding: 5px 10px;
+    margin: 10px;
+    border-radius: 5px;
+    border: 2px solid #d5d5d5;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.WebCamFrameImg {
+    margin: 20px;
+}
