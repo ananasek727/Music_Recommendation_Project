@@ -17,7 +17,7 @@ function MusicControl  (props: any)  {
         <div className={styles.MusicControlFrame}>
             <div className={styles.MusicControlPlaylistHolder}>
                 {props.playlist.songs.map((song: SongInterface) => (
-                    <PlaylistElement song={song}/>
+                    <PlaylistElement key={song.id} song={song}/>
                 ))}
             </div>
             <div className={styles.MusicControlPlaybackHolder}>

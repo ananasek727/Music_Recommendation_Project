@@ -11,6 +11,7 @@ function ImageUploadFrame  (props: any)  {
             if (reader.readyState === 2) {
               const base64 = reader.result as string;
               props.setImgSrc(base64);
+              console.log(base64);
             }
           };
           reader.readAsDataURL(fileList[0]);
