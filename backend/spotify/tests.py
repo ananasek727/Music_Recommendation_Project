@@ -1,5 +1,5 @@
 from django.test import TestCase, RequestFactory
-from .views import Logout
+from .views import (Logout)
 
 # Create your tests here.
 

@@ -89,6 +89,8 @@ class EmotionFromPhotoView(viewsets.ModelViewSet):
     serializer_class = PhotoRequestSerializer
 
     def create(self, request, *args, **kwargs):
+        print(type(request))
+        print(request)
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
             return Response({'message': 'Invalid request.'}, status=status.HTTP_400_BAD_REQUEST)
