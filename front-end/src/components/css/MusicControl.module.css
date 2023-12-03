@@ -1,0 +1,35 @@
+.MusicControlFrame {
+    min-height: 70vh;
+    max-height: 70vh;
+    width: 100%;
+    display: flex;
+    background-color: beige;
+    border-radius: 5px;
+    flex-direction: column;
+}
+
+.MusicControlPlaylistHolder {
+    min-height: 40vh;
+    max-height: 40vh;
+    width: 100%;
+    display: flex;
+    background-color: rgb(155, 155, 47);
+    overflow-y: auto;
+    flex-direction: column;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    align-items: center;
+}
+
+.MusicControlPlaybackHolder {
+    min-height: 30vh;
+    max-height: 30vh;
+    width: 100%;
+    display: flex;
+    background-color: rgb(94, 133, 110);
+    overflow-y: auto;
+    flex-direction: column;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    align-items: center;
+}
