@@ -11,8 +11,6 @@ from .serializers import PhotoRequestSerializer, ParametersSerializer
 import cv2
 import numpy as np
 import base64
-from io import BytesIO
-from PIL import Image
 from . import CONFIDENCE, net, emotion_model
 
 
