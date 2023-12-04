@@ -6,13 +6,13 @@ function MusicParameters  (props: any)  {
     // get recommended playlist
     const handlePlaylistRecommendation = async () => {
         await fetch(`http://127.0.0.1:8000/create-playlist-based-on-parameters`, {
-              method: "GET",
+              method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
-                "emotion": "neutral",
-                "personalization": "high",
-                "popularity": "medium",
-                "genres": []
+                "emotion": props.detectedEmotion,
+                "personalization": props.musicParameter2,
+                "popularity": props.musicParameter1,
+                "genres": props.musicParameter3
               })
               })
               .then((response) => {
@@ -22,11 +22,11 @@ function MusicParameters  (props: any)  {
                 }
               })
               .then((data) => {
-                props.setDetectedEmotion(data.emotion);
+                props.setRecommendedPlaylist(data);
                 console.log(data);
               })
               .catch((e) => {
-                console.log("Error when trying to get users emotion: " + e);
+                console.log("Error when trying to get recommended playlist: " + e);
               });       
       }
     
@@ -42,7 +42,7 @@ function MusicParameters  (props: any)  {
             {/* Popularity */}
             <select className={styles.MusicParametersSelect} value={props.musicParameter1} onChange={handleChangePopularity}>
                 <option value="">Popularity</option>
-                <option value="high">Mainstream</option>
+                <option value="mainstream">Mainstream</option>
                 <option value="medium">Medium</option>
                 <option value="low">Low</option>
             </select>
@@ -53,6 +53,7 @@ function MusicParameters  (props: any)  {
                 <option value="medium">Medium</option>
                 <option value="low">Low</option>
             </select>
+            {/* Genres */}
             <button onClick={handlePlaylistRecommendation}>Recommend music</button>
         </div>
     )

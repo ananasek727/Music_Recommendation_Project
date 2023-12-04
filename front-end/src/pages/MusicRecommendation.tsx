@@ -38,7 +38,7 @@ function MusicRecommendationPage  ()  {
   // set variable for storing music recommendation parameters
   const [musicParameter1, setMusicParameter1] = React.useState(''); // initialize it
   const [musicParameter2, setMusicParameter2] = React.useState(''); // initialize it
-  const [musicParameter3, setMusicParameter3] = React.useState(''); // initialize it
+  const [musicParameter3, setMusicParameter3] = React.useState([]); // initialize it
 
   // set variable for detected emotion of a user 
   const [detectedEmotion, setDetectedEmotion] = React.useState();
@@ -46,13 +46,12 @@ function MusicRecommendationPage  ()  {
   // get music recommendation, returns playlist
   const [recommendedPlaylist, setRecommendedPlaylist] = React.useState<PlaylistInterface>(
     {
-    name: "Sample playlist",
-    songs: [
+    tracks: [
       {
         title: "Post",
         artist: "Dawid Podsiadło",
         duration: 100000,
-        image_url: "123",
+        image_url: "https://images.unsplash.com/photo-1575936123452-b67c3203c357?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D",
         id: "1",
         uri: "1",
       },
@@ -60,7 +59,7 @@ function MusicRecommendationPage  ()  {
         title: "To co masz Ty!",
         artist: "Dawid Podsiadło",
         duration: 100000,
-        image_url: "1234",
+        image_url: "https://images.unsplash.com/photo-1575936123452-b67c3203c357?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D",
         id: "2",
         uri: "2",
       }
@@ -70,46 +69,45 @@ function MusicRecommendationPage  ()  {
   React.useEffect(()=>{
     setRecommendedPlaylist(
       {
-        name: "Sample playlist",
-        songs: [
+        tracks: [
           {
             title: "Post",
             artist: "Dawid Podsiadło",
             duration: 100000,
-            image_url: "123",
-            id: "1",
+            image_url: "https://images.unsplash.com/photo-1575936123452-b67c3203c357?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D",
+            id: "3",
             uri: "1",
           },
           {
             title: "To co masz Ty!",
             artist: "Dawid Podsiadło",
             duration: 100000,
-            image_url: "1234",
-            id: "2",
+            image_url: "https://images.unsplash.com/photo-1575936123452-b67c3203c357?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D",
+            id: "4",
             uri: "2",
           },
           {
             title: "Post",
             artist: "Dawid Podsiadło",
             duration: 100000,
-            image_url: "123",
-            id: "1",
+            image_url: "https://images.unsplash.com/photo-1575936123452-b67c3203c357?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D",
+            id: "5",
             uri: "1",
           },
           {
             title: "Post",
             artist: "Dawid Podsiadło",
             duration: 100000,
-            image_url: "123",
-            id: "1",
+            image_url: "https://images.unsplash.com/photo-1575936123452-b67c3203c357?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D",
+            id: "6",
             uri: "1",
           },
           {
             title: "Post",
             artist: "Dawid Podsiadło",
             duration: 100000,
-            image_url: "123",
-            id: "1",
+            image_url: "https://images.unsplash.com/photo-1575936123452-b67c3203c357?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D",
+            id: "7",
             uri: "1",
           }
         ]
