@@ -34,3 +34,10 @@ class ParametersSerializer(serializers.Serializer):
     class Meta:
         fields = ['emotion', 'personalization', 'popularity', 'genres']
 
+
+class SavePlaylistSerializer(serializers.Serializer):
+    playlist_name = serializers.CharField(max_length=100)
+
+    class Meta:
+        fields = ['playlist_name']
+

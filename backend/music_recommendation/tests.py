@@ -98,7 +98,7 @@ class PlaylistBasedOnParametersTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertIn('Invalid request', response.data['message'])
 
-    def test_valid_request(self):
+    def test_create_playlist_success(self):
         request_data = {
             'emotion': 'happy',
             'personalization': 'low',
@@ -111,5 +111,29 @@ class PlaylistBasedOnParametersTestCase(TestCase):
         }
         request = self.factory.post('create_playlist_based_on_parameters', request_data)
         response = PlaylistBasedOnParametersView.as_view({'post': 'create'})(request)
-        print(response.data)
         self.assertEqual(response.status_code, 200)
+
+
+class SavePlaylistTestCase(TestCase):
+
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.playlist_name = 'recommended_playlist'
+
+    def test_invalid_request(self):
+        request_data = {}
+        request = self.factory.post('save_playlist', request_data)
+        response = EmotionFromPhotoView.as_view({'post': 'create'})(request)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('Invalid request', response.data['message'])
+
+    def test_no_playlist_to_save(self):
+        pass
+
+    def test_save_playlist_not_authenticated(self):
+        pass
+
+    def test_save_playlist_success(self):
+        pass
+
+

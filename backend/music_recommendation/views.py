@@ -6,7 +6,7 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 
 from .models import Song
-from .serializers import PhotoRequestSerializer, ParametersSerializer
+from .serializers import PhotoRequestSerializer, ParametersSerializer, SavePlaylistSerializer
 
 import cv2
 import numpy as np
@@ -89,8 +89,6 @@ class EmotionFromPhotoView(viewsets.ModelViewSet):
     serializer_class = PhotoRequestSerializer
 
     def create(self, request, *args, **kwargs):
-        print(type(request))
-        print(request)
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
             return Response({'message': 'Invalid request.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -134,5 +132,24 @@ class PlaylistBasedOnParametersView(viewsets.ModelViewSet):
         )
 
         return Response(response_data, status=status.HTTP_200_OK)
+
+
+class SavePlaylistView(viewsets.ModelViewSet):
+    serializer_class = SavePlaylistSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response({'message': 'Invalid request.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+        # if user not authenticated:
+        #     return Response({'message': 'Unauthorized user.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        # TODO: save songs to a playlist
+
+
+        return Response(request, status=status.HTTP_200_OK)
 
 
