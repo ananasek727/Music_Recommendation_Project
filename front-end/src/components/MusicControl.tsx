@@ -8,15 +8,15 @@ function MusicControl  (props: any)  {
     const [currentSong, setCurrentSong] = React.useState<SongInterface>();
 
     React.useEffect(()=>{
-        if(props.playlist.songs.length > 0){
-           setCurrentSong(props.playlist.songs[0]);
+        if(props.playlist.tracks.length > 0){
+           setCurrentSong(props.playlist.tracks[0]);
         }
     },[props.playlist]);
 
     return (
         <div className={styles.MusicControlFrame}>
             <div className={styles.MusicControlPlaylistHolder}>
-                {props.playlist.songs.map((song: SongInterface) => (
+                {props.playlist.tracks.map((song: SongInterface) => (
                     <PlaylistElement key={song.id} song={song}/>
                 ))}
             </div>
