@@ -5,6 +5,29 @@ import styles from './css/WebCamFrame.module.css';
 function WebCamFrame  (props: any)  {
       const webcamRef = React.useRef(null); // create a webcam reference
       
+      const handleEmotionPrediction = async () => {
+        await fetch(`http://127.0.0.1:8000/get-emotion-from-photo`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                "base64_photo": props.imgSrc
+              })
+              })
+              .then((response) => {
+                if (response.ok) return response.json();
+                else {
+                  throw new Error("ERROR " + response.status);
+                }
+              })
+              .then((data) => {
+                props.setDetectedEmotion(data.emotion);
+                console.log(data);
+              })
+              .catch((e) => {
+                console.log("Error when trying to get users emotion: " + e);
+              });       
+      }
+
       const retake = () => {
         props.setImgSrc(null);
       };

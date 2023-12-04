@@ -2,7 +2,6 @@ import * as React from 'react';
 import styles from './css/ImageUploadFrame.module.css';
 
 function ImageUploadFrame  (props: any)  {
-    const [emotionDetected, setEmotionDetected] = React.useState('');
 
     const handleEmotionPrediction = async () => {
       await fetch(`http://127.0.0.1:8000/get-emotion-from-photo`, {
@@ -19,8 +18,8 @@ function ImageUploadFrame  (props: any)  {
               }
             })
             .then((data) => {
-              setEmotionDetected(data);
-              console.log(emotionDetected);
+              props.setDetectedEmotion(data.emotion);
+              console.log(data);
             })
             .catch((e) => {
               console.log("Error when trying to get users emotion: " + e);

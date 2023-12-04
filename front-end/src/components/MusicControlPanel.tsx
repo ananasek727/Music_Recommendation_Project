@@ -3,8 +3,8 @@ import styles from './css/MusicControlPanel.module.css';
 import { WebPlaybackSDK } from "react-spotify-web-playback-sdk";
 
 function MusicControlPanel  (props: any)  {
-    // const [token, setToken] = React.useState('BQDMr1d-LQPTNZfbb9ag329YxQqrvnBxrxXZkwIQ50Ai-45AtKhhRIcChtnD3zOz26-H_R9nXPKVx7KmaQyRCQoP-7h7zqMh6DMqtGN7Iy6VhjQ-bq0Xm1RULAXaWoLwo0ccd1d2Z8-36_WZ0uuwgA2q8fnl4OMnrWMkqH_c5gfJtuOyOsTnBjji5aPEKQbUC4-gC8Oy');
-    const [token, setToken] = React.useState('');
+    const [token, setToken] = React.useState('BQDEkobq7nTvwWb2p4RqXy9_KaszyVnWckSrz3yz3Zti-eVHmhohxhU5av0AXHeNVkh92jnzTHQpUaDsGdnJgF_stFYdGPhpb6zwdIv1TEj5xmsJ-HNnglZmTK_33EI1_G10ay_WOSVv581rzqBlKcWyEOF7MpxHVcDYiX7WTyj-1tmWqbVYvG8y5i10lrzPebCnMada');
+    //const [token, setToken] = React.useState('');
     const [player, setPlayer] = React.useState<Spotify.Player>();
     const [deviceID, setDeviceID] = React.useState('');
     const [isPlaybackTransferred, setIsPlaybackTransferred] = React.useState(false);
