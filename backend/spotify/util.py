@@ -10,7 +10,9 @@ BASE_URL = "https://api.spotify.com/v1/me/"
 
 def get_user_tokens(session_id):
     user_tokens = SpotifyToken.objects.filter(user=session_id)
+    print("get user tokens")
     print(user_tokens)
+    # print(user_tokens[0])
     if user_tokens.exists():
         return user_tokens[0]
     else:
@@ -44,9 +46,11 @@ def is_spotify_authenticated(session_id):
         expiry = tokens.expires_in
         if expiry <= timezone.now():
             refresh_spotify_token(session_id)
-        return True
 
-    return False
+        tokens = get_user_tokens(session_id)
+        return True, tokens.access_token
+
+    return False, None
 
 
 def refresh_spotify_token(session_id):
@@ -68,7 +72,7 @@ def refresh_spotify_token(session_id):
         session_id, access_token, token_type, expires_in, refresh_token)
 
 
-def execute_spotify_api_request(token, endpoint, post_=False, put_=False):
+def execute_spotify_api_request(token, endpoint, post_=False, put_=False, request_data=None):
     tokens = token
     headers = {'Content-Type': 'application/json',
                'Authorization': "Bearer " + tokens.access_token}
@@ -79,9 +83,11 @@ def execute_spotify_api_request(token, endpoint, post_=False, put_=False):
         put(BASE_URL + endpoint, headers=headers)
 
     response = get(BASE_URL + endpoint, {}, headers=headers)
+    print(response.status_code)
+    # print(response.data)
     try:
         return response.json()
     # TODO: what exception???
-    except:
-        return {'Error': 'Issue with request'}
+    except Exception as e:
+        return {'message': f'Error occured: {e}'}
 
