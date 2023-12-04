@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
-from .util import (update_or_create_user_tokens, is_spotify_authenticated, execute_spotify_api_request,
-                   delete_user_tokens, get_user_tokens)
+from .util import update_or_create_user_tokens, is_spotify_authenticated, execute_spotify_api_request
 from .credentials import REDIRECT_URI, CLIENT_SECRET, CLIENT_ID
 from rest_framework.views import APIView
 from requests import Request, post
@@ -51,7 +50,9 @@ def spotify_callback(request, format=None):
         request.session.session_key, access_token, token_type, expires_in, refresh_token
     )
 
-    return redirect('/')
+    # TODO: url to main site
+    return redirect('')
+    # return redirect('main_app:parameter_main', pk="camera")
 
 
 class IsAuthenticated(APIView):
@@ -64,15 +65,7 @@ class IsAuthenticated(APIView):
 
 class Logout(APIView):
     def delete(self, request, format=None):
-        user_tokens = SpotifyToken.objects.all()
-        if len(user_tokens) == 0:
-            Response({'message': 'User not logged in.'}, status=status.HTTP_200_OK)
-        print(f"user tokens 0 {user_tokens}")
-        try:
-            delete_user_tokens()
-        except Exception as e:
-            return Response({'message': f'Error occurred: {e}.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        print(f"user tokens 1 {user_tokens}")
+        # TODO: remove auth token??? logout -> TBD
         return Response({'message': 'Successfully logged out of Spotify.'}, status=status.HTTP_200_OK)
 
 
