@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 import base64
 import binascii
-from . import POPULARITY_CHOICES, PERSONALIZATION_CHOICES, EMOTIONS
+# from . import POPULARITY_CHOICES, PERSONALIZATION_CHOICES, EMOTIONS
 
 
 def validate_base64(value):
@@ -22,15 +22,15 @@ class PhotoRequestSerializer(serializers.Serializer):
         fields = ['base64_photo']
 
 
-class ParametersSerializer(serializers.Serializer):
-    emotion = serializers.ChoiceField(choices=EMOTIONS)
-    personalization = serializers.ChoiceField(choices=PERSONALIZATION_CHOICES)
-    popularity = serializers.ChoiceField(choices=POPULARITY_CHOICES)
-    genres = serializers.ListField(
-        child=serializers.CharField(),
-        max_length=5
-    )
-
-    class Meta:
-        fields = ['emotion', 'personalization', 'popularity', 'genres']
-
+# class ParametersSerializer(serializers.Serializer):
+#     emotion = serializers.ChoiceField(choices=EMOTIONS)
+#     personalization = serializers.ChoiceField(choices=PERSONALIZATION_CHOICES)
+#     popularity = serializers.ChoiceField(choices=POPULARITY_CHOICES)
+#     genres = serializers.ListField(
+#         child=serializers.CharField(),
+#         max_length=5
+#     )
+#
+#     class Meta:
+#         fields = ['emotion', 'personalization', 'popularity', 'genres']
+#

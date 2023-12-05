@@ -16,6 +16,6 @@ net = cv2.dnn.readNetFromCaffe(PROTOTXT_PATH, FR_MODEL_PATH)
 assert isinstance(tensorflow.keras.models, object)
 emotion_model = tensorflow.keras.models.load_model(MODEL_PATH)
 
-PERSONALIZATION_CHOICES = ['high', 'medium', 'low']
-POPULARITY_CHOICES = ['mainstream', 'medium', 'low']
-EMOTIONS = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
+# PERSONALIZATION_CHOICES = ['high', 'medium', 'low']
+# POPULARITY_CHOICES = ['mainstream', 'medium', 'low']
+# EMOTIONS = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']

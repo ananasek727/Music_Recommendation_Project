@@ -1,18 +1,30 @@
 from django.shortcuts import render, redirect
 from .util import (update_or_create_user_tokens, is_spotify_authenticated, execute_spotify_api_request,
-                   delete_user_tokens, get_user_tokens)
+                   delete_user_tokens, get_user_tokens, get_users_top_artists, get_users_top_tracks,
+                   get_recommendations, delete_songs, save_playlist, get_currently_playing_song)
 from .credentials import REDIRECT_URI, CLIENT_SECRET, CLIENT_ID
 from rest_framework.views import APIView
 from requests import Request, post
 from rest_framework.response import Response
 from rest_framework import status
-from .models import SpotifyToken
+from .models import SpotifyToken, Song
+from rest_framework import viewsets
+from .serializers import ParametersSerializer, SavePlaylistSerializer #, AddItemsToQueueSerializer
 
 
 class AuthURL(APIView):
     def get(self, request, format=None):
         # TODO: ???? scopes? client_id?
-        scopes = 'streaming user-read-email user-read-private user-read-playback-state user-modify-playback-state user-read-currently-playing'
+        scopes = (
+            'user-top-read streaming '
+            'user-read-email '
+            'user-read-private '
+            'user-read-playback-state '
+            'user-modify-playback-state '
+            'user-read-currently-playing '
+            'playlist-modify-private '
+            'playlist-modify-public '
+        )
         url = Request('GET', 'https://accounts.spotify.com/authorize', params={
             'scope': scopes,
             'response_type': 'code',
@@ -58,9 +70,13 @@ def spotify_callback(request, format=None):
 
 class IsAuthenticated(APIView):
     def get(self, request, format=None):
-        is_authenticated, access_token = is_spotify_authenticated(
-            self.request.session.session_key
-        )
+        try:
+            is_authenticated, access_token = is_spotify_authenticated(
+                self.request.session.session_key
+            )
+        except Exception as e:
+            return Response({'message': f'Error occurred: {e}.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         return Response({'authentication_status': is_authenticated,
                          'access_token': access_token}, status=status.HTTP_200_OK)
 
@@ -81,62 +97,131 @@ class Logout(APIView):
         return Response({'message': 'Successfully logged out of Spotify.',
                          'url': 'https://www.spotify.com/fr/logout'}, status=status.HTTP_200_OK)
 
-
-
-        return Response(response, status=status.HTTP_200_OK)
-
-
-def get_playlist():
-    dawid_id = '6EB8VE9f7Ut6NOgviN6gDW'
-
-    if not SpotifyToken.objects.exists():
-        return Response({'message': 'Unauthorized user.'}, status=status.HTTP_401_UNAUTHORIZED)
-
-    token = SpotifyToken.objects.last()
-    endpoint = "recommendations"
-    request_data = {}
-    response = execute_spotify_api_request(token, endpoint, request_data)
-    print(response)
-    # if 'error' in response or 'item' not in response:
-    #     return Response({}, status=status.HTTP_204_NO_CONTENT)
-    #
-    # item = response.get('item')
-    # duration = item.get('duration_ms')
-    # progress = response.get('progress_ms')
-    # album_cover = item.get('album').get('images')[0].get('url')
-    # is_playing = response.get('is_playing')
-    # song_id = item.get('id')
-    #
-    # artist_string = ""
-    #
-    # for i, artist in enumerate(item.get('artists')):
-    #     if i > 0:
-    #         artist_string += ", "
-    #     name = artist.get('name')
-    #     artist_string += name
-    #
-    # song = {
-    #     'title': item.get('name'),
-    #     'artist': artist_string,
-    #     'duration': duration,
-    #     'time': progress,
-    #     'image_url': album_cover,
-    #     'is_playing': is_playing,
-    #     'votes': 0,
-    #     'id': song_id
-    # }
-    #
-    # return Response(song, status=status.HTTP_200_OK)
+        # return Response(response, status=status.HTTP_200_OK)
 
 
 class UserInfo(APIView):
     def get(self, request, format=None):
         if not SpotifyToken.objects.exists():
             return Response({}, status=status.HTTP_401_UNAUTHORIZED)
+
         token = SpotifyToken.objects.last()
         print(token.access_token)
-        endpoint = ""
+        endpoint = "me/"
         response = execute_spotify_api_request(token, endpoint)
         print(response)
 
         return Response(response, status=status.HTTP_200_OK)
+
+
+class PlaylistBasedOnParametersView(viewsets.ModelViewSet):
+    serializer_class = ParametersSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response({'message': 'Invalid request.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not SpotifyToken.objects.exists():
+            return Response({'message': 'Unauthorized user.'}, status=status.HTTP_401_UNAUTHORIZED)
+        token = SpotifyToken.objects.last()
+
+        try:
+            print(f"db songs: {Song.objects.all()}")
+            delete_songs()
+            print(f"db songs after delete: {Song.objects.all()}")
+
+            top_artists_ids = get_users_top_artists(token)
+            top_tracks_ids = get_users_top_tracks(token)
+            tracks = get_recommendations(token,
+                                         f"{top_artists_ids[0]},{top_artists_ids[2]},{top_artists_ids[3]}",
+                                         f"{top_tracks_ids[1]},{top_tracks_ids[3]}")
+
+            for track in tracks:
+                Song(
+                    title=track['title'],
+                    artist_str=track['artist_str'],
+                    duration=track['duration'],
+                    image_url=track['image_url'],
+                    id=track['id'],
+                    uri=track['uri']
+                ).save()
+
+            print(f"db songs: {Song.objects.all()}")
+
+        except Exception as e:
+            return {'message': f'Error occurred: {e}'}
+
+        return Response({'data': tracks}, status=status.HTTP_200_OK)
+
+
+class SavePlaylistView(APIView):
+    serializer_class = SavePlaylistSerializer
+
+    def create(self, request, *args, **kwargs):
+        # print("======= save playlist")
+        serializer = self.get_serializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response({'message': 'Invalid request.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not SpotifyToken.objects.exists():
+            return Response({'message': 'Unauthorized user.'}, status=status.HTTP_401_UNAUTHORIZED)
+        token = SpotifyToken.objects.last()
+
+        try:
+            # print(f"db songs: {Song.objects.all()}")
+            tracks = Song.objects.all()
+            save_playlist(token, tracks, request.data['name'])
+
+        except Exception as e:
+            return Response({'message': f'Error occurred: {e}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response({'message': 'Playlist saved successfully'}, status=status.HTTP_200_OK)
+
+
+class CurrentlyPlayingSongView(APIView):
+    def get(self, request, format=None):
+        if not SpotifyToken.objects.exists():
+            return Response({'message': 'Unauthorized user.'}, status=status.HTTP_401_UNAUTHORIZED)
+        token = SpotifyToken.objects.last()
+
+        try:
+            currently_playing_song = get_currently_playing_song(token)
+        except Exception as e:
+            return Response({'message': f'Error occurred: {e}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        if currently_playing_song is None:
+            return Response({'message': 'No currently playing song.'}, status=status.HTTP_204_NO_CONTENT)
+        return Response(currently_playing_song, status=status.HTTP_200_OK)
+
+
+# class PlayerQueueView(viewsets.ModelViewSet):
+#     serializer_class = AddItemsToQueueSerializer
+#
+#     def get(self, request, format=None):
+#         if not SpotifyToken.objects.exists():
+#             return Response({'message': 'Unauthorized user.'}, status=status.HTTP_401_UNAUTHORIZED)
+#         token = SpotifyToken.objects.last()
+#
+#         try:
+#             player_queue = get_player_queue(token)
+#         except Exception as e:
+#             return Response({'message': f'Error occurred: {e}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+#
+#         if player_queue is None:
+#             return Response({'message': 'PLayer queue is empty.'}, status=status.HTTP_204_NO_CONTENT)
+#         return Response(player_queue, status=status.HTTP_200_OK)
+#
+#     def post(self, request, format=None):
+#         serializer = self.get_serializer(data=request.data)
+#         if not serializer.is_valid():
+#             return Response({'message': 'Invalid request.'}, status=status.HTTP_400_BAD_REQUEST)
+#
+#         if not SpotifyToken.objects.exists():
+#             return Response({'message': 'Unauthorized user.'}, status=status.HTTP_401_UNAUTHORIZED)
+#         token = SpotifyToken.objects.last()
+#
+#
+
