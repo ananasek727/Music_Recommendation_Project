@@ -152,7 +152,7 @@ class PlaylistBasedOnParametersView(viewsets.ModelViewSet):
             print(f"db songs: {Song.objects.all()}")
 
         except Exception as e:
-            return {'message': f'Error occurred: {e}'}
+            return Response({'message': f'Error occurred: {e}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response({'data': tracks}, status=status.HTTP_200_OK)
 
