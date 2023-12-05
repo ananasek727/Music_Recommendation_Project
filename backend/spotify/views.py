@@ -156,7 +156,7 @@ class PlaylistBasedOnParametersView(viewsets.ModelViewSet):
         return Response({'data': tracks}, status=status.HTTP_200_OK)
 
 
-class SavePlaylistView(APIView):
+class SavePlaylistView(viewsets.ModelViewSet):
     serializer_class = SavePlaylistSerializer
 
     def create(self, request, *args, **kwargs):
