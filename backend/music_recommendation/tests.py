@@ -1,5 +1,5 @@
 from django.test import TestCase, RequestFactory
-from .views import EmotionFromPhotoView, PlaylistBasedOnParametersView
+from .views import EmotionFromPhotoView #, PlaylistBasedOnParametersView
 
 # Create your tests here.
 
