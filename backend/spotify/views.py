@@ -16,7 +16,8 @@ class AuthURL(APIView):
     def get(self, request, format=None):
         # TODO: ???? scopes? client_id?
         scopes = (
-            'user-top-read streaming '
+            'user-top-read '
+            'streaming '
             'user-read-email '
             'user-read-private '
             'user-read-playback-state '
