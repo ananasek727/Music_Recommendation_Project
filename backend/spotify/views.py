@@ -242,7 +242,7 @@ class PlayerNextView(viewsets.ModelViewSet):
 class PlayerPauseView(viewsets.ModelViewSet):
     serializer_class = DeviceIdSerializer
 
-    def create(self, request, *args, **kwargs):
+    def update(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
             return Response({'message': 'Invalid request.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -262,7 +262,7 @@ class PlayerPauseView(viewsets.ModelViewSet):
 class PlayerPlayView(viewsets.ModelViewSet):
     serializer_class = DeviceIdSerializer
 
-    def create(self, request, *args, **kwargs):
+    def update(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
             return Response({'message': 'Invalid request.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -282,7 +282,7 @@ class PlayerPlayView(viewsets.ModelViewSet):
 class PlayerTransferPlaybackView(viewsets.ModelViewSet):
     serializer_class = DeviceIdSerializer
 
-    def create(self, request, *args, **kwargs):
+    def update(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
             return Response({'message': 'Invalid request.'}, status=status.HTTP_400_BAD_REQUEST)

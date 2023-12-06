@@ -14,7 +14,8 @@ urlpatterns = [
     path('currently-playing-song', CurrentlyPlayingSongView.as_view(), name='currently_playing_song'),
     path('player/queue', PlayerQueueView.as_view({'post': 'create'}), name='player_queue'),
     path('player/next', PlayerNextView.as_view({'post': 'create'}), name='player_next'),
-    path('player/pause', PlayerPauseView.as_view({'post': 'create'}), name='player_pause'),
-    path('player/play', PlayerPlayView.as_view({'post': 'create'}), name='player_play'),
-    path('player/tranfer-playback', PlayerTransferPlaybackView.as_view({'post': 'create'}), name='player_transfer_playback')
+    path('player/pause', PlayerPauseView.as_view({'put': 'update'}), name='player_pause'),
+    path('player/play', PlayerPlayView.as_view({'put': 'update'}), name='player_play'),
+    path('player/tranfer-playback', PlayerTransferPlaybackView.as_view({'put': 'update'}),
+         name='player_transfer_playback')
 ]
