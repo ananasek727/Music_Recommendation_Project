@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from .util import (update_or_create_user_tokens, is_spotify_authenticated, execute_spotify_api_request,
                    delete_user_tokens, get_user_tokens, get_users_top_artists, get_users_top_tracks,
                    get_recommendations, delete_songs, save_playlist, get_currently_playing_song, add_songs_to_queue,
-                   player_next, player_pause, player_play, player_transfer_playback)
+                   player_next, player_pause, player_play, player_transfer_playback, player_set_volume)
 from .credentials import REDIRECT_URI, CLIENT_SECRET, CLIENT_ID
 from rest_framework.views import APIView
 from requests import Request, post
@@ -10,7 +10,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import SpotifyToken, Song
 from rest_framework import viewsets
-from .serializers import ParametersSerializer, SavePlaylistSerializer, AddItemsToQueueSerializer, DeviceIdSerializer
+from .serializers import (ParametersSerializer, SavePlaylistSerializer, AddItemsToQueueSerializer, DeviceIdSerializer,
+                          VolumeSerializer)
 
 
 class AuthURL(APIView):
@@ -297,3 +298,23 @@ class PlayerTransferPlaybackView(viewsets.ModelViewSet):
             return Response({'message': f'Error occurred: {e}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response({'message': f'Command sent.'}, status=status.HTTP_200_OK)
+
+
+class PlayerSetVolumeView(viewsets.ModelViewSet):
+    serializer_class = VolumeSerializer
+
+    def update(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({'message': 'Invalid request.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not SpotifyToken.objects.exists():
+            return Response({'message': 'Unauthorized user.'}, status=status.HTTP_401_UNAUTHORIZED)
+        token = SpotifyToken.objects.last()
+
+        try:
+            player_set_volume(token, request.data['volume_percent'])
+        except Exception as e:
+            return Response({'message': f'Error occurred: {e}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response({'message': f'Volume set to {request.data["volume_percent"]}%.'}, status=status.HTTP_200_OK)

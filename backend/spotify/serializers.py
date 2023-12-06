@@ -38,3 +38,10 @@ class DeviceIdSerializer(serializers.Serializer):
 
     class Meta:
         fields = ['device_id']
+
+
+class VolumeSerializer(serializers.Serializer):
+    volume_percent = serializers.IntegerField()
+
+    class Meta:
+        fields = ['volume_percent']

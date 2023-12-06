@@ -276,7 +276,7 @@ def player_next(token: str, device_id: str):
 
 
 def player_pause(token: str, device_id: str):
-    endpoint = "me/player/next"
+    endpoint = "me/player/pause"
 
     request_data = urlencode({
         'device_id': device_id
@@ -300,9 +300,21 @@ def player_play(token: str, device_id: str):
 def player_transfer_playback(token: str, device_id: str):
     endpoint = "me/player"
 
-    request_data = urlencode({
+    request_data = {
         'device_ids': [device_id]
+    }
+    response = execute_spotify_api_request(token, put_=True, endpoint=f"{endpoint}", request_data=request_data)
+    if 'error' in response:
+        raise Exception(f"Error occurred: {response}")
+
+
+def player_set_volume(token: str, volume: int):
+    endpoint = "me/player/volume"
+
+    request_data = urlencode({
+        'volume_percent': volume
     })
     response = execute_spotify_api_request(token, put_=True, endpoint=f"{endpoint}?{request_data}")
     if 'error' in response:
         raise Exception(f"Error occurred: {response}")
+
