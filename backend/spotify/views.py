@@ -71,17 +71,22 @@ def spotify_callback(request, format=None):
     return redirect('http://localhost:3000/')
 
 
-class IsAuthenticated(APIView):
-    def get(self, request, format=None):
+class IsAuthenticated(viewsets.ModelViewSet):
+    def list(self, request, *args, **kwargs):
         try:
-            is_authenticated, access_token = is_spotify_authenticated(
+            is_authenticated = is_spotify_authenticated(
                 self.request.session.session_key
             )
         except Exception as e:
             return Response({'message': f'Error occurred: {e}.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+        if not SpotifyToken.objects.exists():
+            token = None
+        else:
+            token = SpotifyToken.objects.last()
+
         return Response({'authentication_status': is_authenticated,
-                         'access_token': access_token}, status=status.HTTP_200_OK)
+                         'access_token': token.access_token}, status=status.HTTP_200_OK)
 
 
 class Logout(APIView):

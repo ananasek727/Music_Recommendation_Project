@@ -45,16 +45,15 @@ def delete_songs() -> None:
 
 
 def is_spotify_authenticated(session_id):
+    # TODO: refresh tokens?????
     tokens = get_user_tokens(session_id)
     if tokens:
         expiry = tokens.expires_in
         if expiry <= timezone.now():
             refresh_spotify_token(session_id)
+        return True
 
-        tokens = get_user_tokens(session_id)
-        return True, tokens.access_token
-
-    return False, None
+    return False
 
 
 def refresh_spotify_token(session_id):
