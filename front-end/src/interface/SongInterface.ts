@@ -1,6 +1,6 @@
 interface SongInterface {
     title: string;
-    artist: string;
+    artist_str: string;
     duration: Number;
     image_url: string;
     id: string;

@@ -17,7 +17,7 @@ function PlaylistElement  (props: any)  {
                     {props.song.title}
                 </div>
                 <div className={styles.PlaylistElementText} style={{fontSize: '15px'}}>
-                    {props.song.artist}
+                    {props.song.artist_str}
                 </div>
             </div>
             

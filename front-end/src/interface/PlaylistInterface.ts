@@ -1,7 +1,7 @@
 import SongInterface from "./SongInterface";
 
 interface PlaylistInterface {
-    tracks: SongInterface[];
+    data: SongInterface[];
 }
 
 export default PlaylistInterface;

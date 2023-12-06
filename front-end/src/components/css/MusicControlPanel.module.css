@@ -1,0 +1,26 @@
+.MusicControlPanelFrame {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.MusicControlPanelFrameInner {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+}
+.MusicControlPanelButton {
+    padding: 5px 10px;
+    margin: 10px;
+    border-radius: 5px;
+    border: 2px solid #d5d5d5;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.MusicControlPanelText {
+    flex: 1;
+    display: flex;
+    direction: column;
+    background-color: rgb(152, 152, 152);
+    align-items: center;
+}

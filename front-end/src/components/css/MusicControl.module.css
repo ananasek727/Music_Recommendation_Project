@@ -9,8 +9,8 @@
 }
 
 .MusicControlPlaylistHolder {
-    min-height: 40vh;
-    max-height: 40vh;
+    min-height: calc(40vh-175px);
+    max-height: calc(40vh-175px);
     width: 100%;
     display: flex;
     background-color: rgb(155, 155, 47);
@@ -22,8 +22,8 @@
 }
 
 .MusicControlPlaybackHolder {
-    min-height: 30vh;
-    max-height: 30vh;
+    min-height: 175px;
+    max-height: 175px;
     width: 100%;
     display: flex;
     background-color: rgb(94, 133, 110);
@@ -33,3 +33,4 @@
     border-top-right-radius: 5px;
     align-items: center;
 }
+

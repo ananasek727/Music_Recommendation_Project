@@ -1,15 +1,19 @@
 import * as React from 'react';
-import styles from './css/MusicControlPanel.module.css';
 import SongInterface from '../interface/SongInterface';
+import CurrentlyPlayingSongInterface from '../interface/CurrentlyPlayingSongInterface';
+import PlaylistInterface from '../interface/PlaylistInterface';
+import CurrentlyPlayingSong from './CurrentlyPlayingSong';
 //import { WebPlaybackSDK } from "react-spotify-web-playback-sdk";
+import styles from './css/MusicControlPanel.module.css';
 
 function MusicControlPanel  (props: any)  {
-    const [token, setToken] = React.useState('BQB7sqzz_-xmLmW-UP4Nm4lQ3oA_niJ9KqAk2QzST9MfueQn42S0m1-qB4qonFLG6Ak8svF6xnsSfaxtUPly2z-fVRzQxXU5QPhcRpXhsFdpcjlT0XuZXPr8r9nM6WEtP0ejTyQ8BsqpYB1Ot3vvlvdicty4sDbdiBghL1JK7pCa0mmRN4kHTNLDDT-7NkxwvskEAsX911U');
+    const [token, setToken] = React.useState('BQCH6eOUB4lDZ-X9OH0giwImRDV_3ZSb5rpNfXj0EbpOCrGcuH0lgSesXmiyQJi8ZF_fca8SWzmpu5eMQFTDY02GVtSXL5NYwukaRpuUaAqPhmY8B9h3IEjuLJwYZQj7UII10ZxXEbnnkjVWT-F_16gkX43WXdoFBA_eZL7I3utBZwbu0RDuAAUs6X8Phc1VUEFuFlsTxz9FJtOQsPG2zn9Wr_HGur7QSFtAELbLXE5jBT1hPSz0ChbgvVpDuA2Po4-TwwwkW6g');
     //const [token, setToken] = React.useState('');
     const [player, setPlayer] = React.useState<Spotify.Player>();
     const [deviceID, setDeviceID] = React.useState('');
     const [isPlaybackTransferred, setIsPlaybackTransferred] = React.useState(false);
-    const [currentSong, setCurrentSong] = React.useState(null);
+    const [currentSong, setCurrentSong] = React.useState<CurrentlyPlayingSongInterface>();
+    const [isSongPlayed, setIsSongPlayed] = React.useState(false);
 
     React.useEffect(()=>{
     if (window.Spotify !== null) {
@@ -35,13 +39,22 @@ function MusicControlPanel  (props: any)  {
       
     },[]);
 
-    const addToQueue = async (songToPlay: string) => {
-        // ?uri=${songToPlay}&device_id=${deviceID}
-        await fetch(`https://api.spotify.com/v1/me/player/queue?uri=${songToPlay}&device_id=${deviceID}`, {
+    // handle adding songs to queue when new playlist is recoommended
+    React.useEffect(()=>{
+      if(isPlaybackTransferred) {
+        addPlaylistToQueue();
+      }
+    },[props.playlistChangeGuard]);
+
+    // handle adding recommended playlist to queue
+    const addPlaylistToQueue = async () => {
+        await fetch(`http://127.0.0.1:8000/player-queue`, {
             method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              "device_id": `${deviceID}`,
+              "song_uris": props.playlistSongsURI
+            })
             })
             .then((response) => {
                 if (response.ok) return response.json();
@@ -50,103 +63,137 @@ function MusicControlPanel  (props: any)  {
                 }
             })
             .catch((e) => {
-            console.log("Error when trying to add song to a queue: " + e);
-            });;
+            console.log("Error when trying to add songs to queue: " + e);
+            });
     }
 
+    // play next track
     const nextTrack = async () => {
         await fetch(`https://api.spotify.com/v1/me/player/next?device_id=${deviceID}`, {
             method: "POST",
             headers: {
               Authorization: `Bearer ${token}`},
             });
+            setIsSongPlayed(true);
     }
 
-    const prevTrack = async () => {
-        await fetch(`https://api.spotify.com/v1/me/player/previous?device_id=${deviceID}`, {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`},
-            });
-    }
-
+    // pause current track
     const pauseTrack = async () => {
     await fetch(`https://api.spotify.com/v1/me/player/pause?device_id=${deviceID}`, {
         method: "PUT",
         headers: {
             Authorization: `Bearer ${token}`},
-        });
+        })
+        // .then((response) => {
+        //   if (response.ok) return response.json();
+        //   else {
+        //     throw new Error("ERROR " + response.status);
+        //   }
+        // })
+        //.then(()=>{
+          setIsSongPlayed(false);
+        //});
+        
     }
 
+    // play current track
     const playTrack = async () => {
+      // if played for the first time in the app, playback is transfered to this app and recommended songs are added to queue, as playTrack button is disabled when playlist is not recommneded yet
         if(!isPlaybackTransferred){
-            await fetch(`https://api.spotify.com/v1/me/player?device_id=${deviceID}`, {
+            await fetch(`https://api.spotify.com/v1/me/player`, {//?device_id=${deviceID}`, {
                 method: "PUT",
                 headers: {
+                    "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`},
-                body: JSON.stringify({"device_ids": [
-                    `${deviceID}`
+                body: JSON.stringify({
+                  device_ids: [ `${deviceID}`
                     ],
-                    "play": false})
+                  play: false })
             })
-            setIsPlaybackTransferred(true);
-
+            // .then((response) => {
+            //   if (response.ok) return response.json();
+            //   else {
+            //     throw new Error("ERROR " + response.status);
+            //   }
+            // })
+            //.then(()=>{
+              setIsPlaybackTransferred(true);
+            //});
+            addPlaylistToQueue();
         }
-        
+       
+
         await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceID}`, {
             method: "PUT",
             headers: {
                 Authorization: `Bearer ${token}`},
         })
-        .then(()=>{
-            getCurrentSong();
-        });
+        // .then((response) => {
+        //   if (response.ok) return response.json();
+        //   else {
+        //     throw new Error("ERROR play" + response.status);
+        //   }
+        // })
+       // .then(()=>{
+          setIsSongPlayed(true);
+        //});
         
     }
 
+    // get data about currently played song, used to display info for a user
     const getCurrentSong = async () => {
-        await fetch(`https://api.spotify.com/v1/me/player/currently-playing`, {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`},
-            })
-            .then((response) => {
-              if (response.ok) return response.json();
-              else {
-                throw new Error("ERROR " + response.status);
-              }
-            })
-            .then((data) => {
-              setCurrentSong(data.item.name);
-              console.log(currentSong);
-            })
-            .catch((e) => {
-              console.log("Error when trying to fetch current song: " + e);
-            });
+            await fetch(`http://127.0.0.1:8000/currently-playing-song`, {
+                method: "GET",
+                })
+                .then((response) => {
+                  if (response.ok) return response.json();
+                  else {
+                    throw new Error("ERROR " + response.status);
+                  }
+                })
+                .then((data) => {
+                  setCurrentSong(data);
+                  console.log(data);
+                })
+                .catch((e) => {
+                  console.log("Error when trying to fetch current song: " + e);
+                });
     }
 
+    // refresh current song data displayed to user, active only when song is played
     React.useEffect(()=>{
         const intervalId = setInterval(() => {
-            // Update the counter every second
-            getCurrentSong();
-          }, 1000); // Runs every second (1000ms)
+           // get current song when track is played
+            if(isSongPlayed === true){
+                getCurrentSong();
+              }
+            else {
+              clearInterval(intervalId);
+            }
+          }, 1000); // Runs every second
       
           // Clear the interval when the component unmounts or when dependencies change
           return () => clearInterval(intervalId);
-    },[]);
+    },[isSongPlayed]);
 
       return (
-        <div>
-            <button onClick={prevTrack}>Previous track</button>
-            <button onClick={pauseTrack}>Pause track</button>
-            <button onClick={playTrack}>Play track</button>
-            <button onClick={nextTrack}>Next track</button>
-            <button onClick={()=>{addToQueue('spotify%3Atrack%3A11dFghVXANMlKmJXsNCbNl')}}>Add to queue</button>
-            {currentSong &&
-            <div>
-                {currentSong}
+        <div className={styles.MusicControlPanelFrame}>
+          <div className={styles.MusicControlPanelFrameInner}>
+            <div className={styles.MusicControlPanelText}>
+              Current song
             </div>
+            {isSongPlayed 
+            ? 
+            <button className={styles.MusicControlPanelButton} onClick={pauseTrack} disabled={props.isPlaylistEmpty}>Pause track</button> 
+            : 
+            <button className={styles.MusicControlPanelButton} onClick={playTrack} disabled={props.isPlaylistEmpty}>Play track</button>}
+            
+            <button className={styles.MusicControlPanelButton} onClick={nextTrack} disabled={props.isPlaylistEmpty}>Next track</button>
+            </div>
+            {currentSong &&
+              <CurrentlyPlayingSong song={currentSong}/>
             }
+          
         </div>
       );
   };
