@@ -83,22 +83,14 @@ def execute_spotify_api_request(token, endpoint, post_=False, put_=False, reques
 
     if post_:
         response = post(BASE_URL + endpoint, headers=headers, json=request_data)
-        # print(response.status_code)
-        # print(response)
-        #
-        # print("POST")
-
     elif put_:
         response = put(BASE_URL + endpoint, headers=headers, json=request_data)
     else:
         response = get(BASE_URL + endpoint, {}, headers=headers)
-        # print(response.status_code)
 
-    if response.status_code not in [200, 201]:
+    if response.status_code not in [200, 201, 202, 204]:
         raise Exception(f"Endpoint {endpoint} response: {response.status_code}")
 
-
-    # print(response.data)
     try:
         return response.json()
     except Exception as e:
@@ -258,12 +250,59 @@ def get_currently_playing_song(token) -> Union[dict, None]:
 
     return currently_playing_song
 
-#
-# def get_player_queue(token):
-#     endpoint = "me/player/queue"
-#     response = execute_spotify_api_request(token, endpoint)
-#     print(response)
-#     if 'error' in response:
-#         raise Exception(f"Error occurred during currently playing song retrival: {response}")
-#
-#
+
+def add_songs_to_queue(token: str, device_id: str, song_uris: list[str]):
+    endpoint = "me/player/queue"
+
+    for song_uri in song_uris:
+        request_data = urlencode({
+            'uri': song_uri,
+            'device_id': device_id
+        })
+        response = execute_spotify_api_request(token, post_=True, endpoint=f"{endpoint}?{request_data}")
+        if 'error' in response:
+            raise Exception(f"Error occurred during adding song {song_uri} to queue: {response}")
+
+
+def player_next(token: str, device_id: str):
+    endpoint = "me/player/next"
+
+    request_data = urlencode({
+        'device_id': device_id
+    })
+    response = execute_spotify_api_request(token, post_=True, endpoint=f"{endpoint}?{request_data}")
+    if 'error' in response:
+        raise Exception(f"Error occurred: {response}")
+
+
+def player_pause(token: str, device_id: str):
+    endpoint = "me/player/next"
+
+    request_data = urlencode({
+        'device_id': device_id
+    })
+    response = execute_spotify_api_request(token, put_=True, endpoint=f"{endpoint}?{request_data}")
+    if 'error' in response:
+        raise Exception(f"Error occurred: {response}")
+
+
+def player_play(token: str, device_id: str):
+    endpoint = "me/player/play"
+
+    request_data = urlencode({
+        'device_id': device_id
+    })
+    response = execute_spotify_api_request(token, put_=True, endpoint=f"{endpoint}?{request_data}")
+    if 'error' in response:
+        raise Exception(f"Error occurred: {response}")
+
+
+def player_transfer_playback(token: str, device_id: str):
+    endpoint = "me/player"
+
+    request_data = urlencode({
+        'device_ids': [device_id]
+    })
+    response = execute_spotify_api_request(token, put_=True, endpoint=f"{endpoint}?{request_data}")
+    if 'error' in response:
+        raise Exception(f"Error occurred: {response}")

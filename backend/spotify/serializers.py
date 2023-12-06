@@ -22,12 +22,19 @@ class SavePlaylistSerializer(serializers.Serializer):
         fields = ['name']
 
 
-# class AddItemsToQueueSerializer(serializers.Serializer):
-#     device_id = serializers.CharField(max_length=100)
-#     song_uris = serializers.ListField(
-#         child=serializers.CharField(),
-#         max_length=40
-#     )
-#
-#     class Meta:
-#         fields = ['device_id', 'song_uris']
+class AddItemsToQueueSerializer(serializers.Serializer):
+    device_id = serializers.CharField(max_length=100)
+    song_uris = serializers.ListField(
+        child=serializers.CharField(),
+        max_length=40
+    )
+
+    class Meta:
+        fields = ['device_id', 'song_uris']
+
+
+class DeviceIdSerializer(serializers.Serializer):
+    device_id = serializers.CharField(max_length=100)
+
+    class Meta:
+        fields = ['device_id']
