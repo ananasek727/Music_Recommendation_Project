@@ -42,79 +42,41 @@ function MusicRecommendationPage  ()  {
 
   // set variable for detected emotion of a user 
   const [detectedEmotion, setDetectedEmotion] = React.useState();
+  const [recommendedPlaylist, setRecommendedPlaylist] = React.useState<PlaylistInterface[]>([]);
+  const [playlistSongsURI, setPlaylistSongURI] = React.useState<string[]>([]);
+  const [isPlaylistEmpty, setIsPlaylistEmpty] = React.useState(true);
+  const [playlistChangeGuard, setPlaylistChangeGuard] = React.useState(false);
 
-  // get music recommendation, returns playlist
-  const [recommendedPlaylist, setRecommendedPlaylist] = React.useState<PlaylistInterface>(
-    {
-    tracks: [
-      {
-        title: "Post",
-        artist: "Dawid Podsiadło",
-        duration: 100000,
-        image_url: "https://images.unsplash.com/photo-1575936123452-b67c3203c357?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D",
-        id: "1",
-        uri: "1",
-      },
-      {
-        title: "To co masz Ty!",
-        artist: "Dawid Podsiadło",
-        duration: 100000,
-        image_url: "https://images.unsplash.com/photo-1575936123452-b67c3203c357?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D",
-        id: "2",
-        uri: "2",
-      }
-    ]
-  }
-  );
-  React.useEffect(()=>{
-    setRecommendedPlaylist(
-      {
-        tracks: [
-          {
-            title: "Post",
-            artist: "Dawid Podsiadło",
-            duration: 100000,
-            image_url: "https://images.unsplash.com/photo-1575936123452-b67c3203c357?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D",
-            id: "3",
-            uri: "1",
-          },
-          {
-            title: "To co masz Ty!",
-            artist: "Dawid Podsiadło",
-            duration: 100000,
-            image_url: "https://images.unsplash.com/photo-1575936123452-b67c3203c357?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D",
-            id: "4",
-            uri: "2",
-          },
-          {
-            title: "Post",
-            artist: "Dawid Podsiadło",
-            duration: 100000,
-            image_url: "https://images.unsplash.com/photo-1575936123452-b67c3203c357?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D",
-            id: "5",
-            uri: "1",
-          },
-          {
-            title: "Post",
-            artist: "Dawid Podsiadło",
-            duration: 100000,
-            image_url: "https://images.unsplash.com/photo-1575936123452-b67c3203c357?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D",
-            id: "6",
-            uri: "1",
-          },
-          {
-            title: "Post",
-            artist: "Dawid Podsiadło",
-            duration: 100000,
-            image_url: "https://images.unsplash.com/photo-1575936123452-b67c3203c357?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D",
-            id: "7",
-            uri: "1",
-          }
-        ]
-      }
-    )
-  },[]);
-
+  const getRecommendedPlaylist = async () => {
+    await fetch(`http://127.0.0.1:8000/create-playlist-based-on-parameters`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          "emotion": "sad",
+          "personalization": "high",
+          "popularity": "mainstream",
+          "genres": []
+        })
+        })
+        .then((response) => {
+            if (response.ok) return response.json();
+            else {
+              throw new Error("ERROR " + response.status);
+            }
+        })
+        .then((data)=>{
+          setRecommendedPlaylist(data);
+          console.log(data);
+          const allURI: string[] = data.data.map((item: { uri: any; }) => item.uri);
+          setPlaylistSongURI(allURI);
+          console.log(allURI);
+          setIsPlaylistEmpty(false);
+          setPlaylistChangeGuard(!playlistChangeGuard);
+        })
+        .catch((e) => {
+        console.log("Error when trying to get playlist with recommended playlist: " + e);
+        });
+    }
 
     return (
       <div className={styles.mRPageFrame}>
@@ -150,11 +112,11 @@ function MusicRecommendationPage  ()  {
               </div>
               <MusicParameters musicParameter1={musicParameter1} musicParameter2={musicParameter2} musicParameter3={musicParameter3} setMusicParameter1={setMusicParameter1} setMusicParameter2={setMusicParameter2} setMusicParameter3={setMusicParameter3} detectedEmotion={detectedEmotion} setRecommendedPlaylist={setRecommendedPlaylist}/>
             </div>
-
+              <button onClick={getRecommendedPlaylist}>get playlist</button>
           </div>
           {/* Music control section, right frame */}
           <div className={styles.mRPageBoxRight}>
-              <MusicControl playlist={recommendedPlaylist}/>
+              <MusicControl playlist={recommendedPlaylist} playlistSongsURI={playlistSongsURI} isPlaylistEmpty={isPlaylistEmpty} playlistChangeGuard={playlistChangeGuard}/>
           </div>
       </div>
     )
