@@ -25,7 +25,8 @@ function WebCamFrame  (props: any)  {
               })
               .catch((e) => {
                 console.log("Error when trying to get users emotion: " + e);
-              });       
+              });
+              
       }
 
       const retake = () => {
@@ -39,8 +40,14 @@ function WebCamFrame  (props: any)  {
         }
       }, [webcamRef]);
 
+      React.useEffect(()=>{
+        if(props.imgSrc)
+          handleEmotionPrediction();
+      },[props.imgSrc])
+
     return (
         <>
+            <button className={styles.webCamFrameButton} onClick={()=>{props.setImgDecision(0);}}>Back</button>
             <div className={styles.WebCamFrameBox}>
                 {props.imgSrc ? (
                     <img className={styles.WebCamFrameImg} src={props.imgSrc} style={{maxWidth: props.width, maxHeight: props.height}}/> 
@@ -55,6 +62,11 @@ function WebCamFrame  (props: any)  {
                 <button className={styles.webCamFrameButton} onClick={capture}>Take photo</button>
             )}
             </div>
+            {props.detectedEmotion &&
+            <div>
+                {props.detectedEmotion}
+            </div>
+            }
         </>
     )
   };

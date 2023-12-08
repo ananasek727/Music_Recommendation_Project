@@ -44,6 +44,7 @@ function ImageUploadFrame  (props: any)  {
 
     return (
         <div >
+            <button className={styles.imageUploadFrameBox} onClick={()=>{props.setImgDecision(0);}}>Back</button>
            {props.imgSrc === null ? (
             <input className={styles.imageUploadFrameBox}
                     type="file"
@@ -54,9 +55,14 @@ function ImageUploadFrame  (props: any)  {
             <div className={styles.imageUploadFramePreview}>
                 <img src={props.imgSrc} style={{maxWidth: props.width, maxHeight: props.height}}/>
                 <button className={styles.imageUploadFrameBox} onClick={()=>{props.setImgSrc(null)}}>Reupload image</button>
-                <button onClick={()=>{handleEmotionPrediction()}}>Predict emotion</button>
+                <button className={styles.imageUploadFrameBox} onClick={()=>{handleEmotionPrediction()}}>Predict emotion</button>
             </div>
            )}
+           {props.detectedEmotion &&
+           <div>
+              {props.detectedEmotion}
+           </div>
+           }
          </div>
     )
   };

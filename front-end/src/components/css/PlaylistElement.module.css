@@ -1,7 +1,8 @@
 .PlaylistElementFrame {
-    min-width: 44vw;
-    max-width: 44vw;
+    min-width: 300px;
+    /* max-width: 44vw; */
     min-height: 100px;
+    width: 97%;
     max-height: 100px;
     background-color: aqua;
     margin: 0.5vw;
