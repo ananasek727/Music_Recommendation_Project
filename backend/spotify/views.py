@@ -71,30 +71,62 @@ def spotify_callback(request, format=None):
     return redirect('http://localhost:3000/')
 
 
-class IsAuthenticated(viewsets.ModelViewSet):
+# class IsAuthenticated(viewsets.ModelViewSet):
+#     def list(self, request, *args, **kwargs):
+#         try:
+#             is_authenticated = is_spotify_authenticated(
+#                 self.request.session.session_key
+#             )
+#         except Exception as e:
+#             return Response({'message': f'Error occurred: {e}.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+#
+#         if not SpotifyToken.objects.exists():
+#             token = None
+#         else:
+#             token = SpotifyToken.objects.last()
+#
+#         return Response({'authentication_status': is_authenticated,
+#                          'access_token': token.access_token}, status=status.HTTP_200_OK)
+#
+
+
+class AccessToken(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         try:
-            is_authenticated = is_spotify_authenticated(
-                self.request.session.session_key
-            )
+            if not SpotifyToken.objects.exists():
+                return Response({}, status=status.HTTP_204_NO_CONTENT)
+            else:
+                token = SpotifyToken.objects.last()
+                return Response({'access_token': token.access_token}, status=status.HTTP_200_OK)
+
         except Exception as e:
             return Response({'message': f'Error occurred: {e}.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        if not SpotifyToken.objects.exists():
-            token = None
-        else:
-            token = SpotifyToken.objects.last()
 
-        return Response({'authentication_status': is_authenticated,
-                         'access_token': token.access_token}, status=status.HTTP_200_OK)
+class RefreshToken(viewsets.ModelViewSet):
+    def list(self, request, *args, **kwargs):
+        user_tokens = SpotifyToken.objects.all()
+        if len(user_tokens) == 0:
+            return Response({'message': 'User not logged in.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        try:
+            # TODO: is_spotify_authenticated -> refresh_spotify_token
+            pass
+            # is_spotify_authenticated(
+            #     self.request.session.session_key
+            # )
+            # return Response({'message': 'Token successfully refreshed.'}, status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return Response({'message': f'Error occurred: {e}.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response({'message': 'Token successfully refreshed.'}, status=status.HTTP_200_OK)
 
 
 class Logout(APIView):
     def delete(self, request, format=None):
         user_tokens = SpotifyToken.objects.all()
         if len(user_tokens) == 0:
-            Response({'message': 'User not logged in.'}, status=status.HTTP_200_OK)
-        print(f"user tokens 0 {user_tokens}")
+            return Response({'message': 'User not logged in.'}, status=status.HTTP_200_OK)
 
         try:
             delete_user_tokens()

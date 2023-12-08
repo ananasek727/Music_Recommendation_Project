@@ -4,7 +4,9 @@ from .views import *
 urlpatterns = [
     path('get-auth-url', AuthURL.as_view()),
     path('spotify/redirect', spotify_callback),
-    path('is-authenticated', IsAuthenticated.as_view({'get': 'list'}), name='is_authenticated'),
+    # path('is-authenticated', IsAuthenticated.as_view({'get': 'list'}), name='is_authenticated'),
+    path('access-token', AccessToken.as_view({'get': 'list'}), name='access_token'),
+    path('token-refresh', RefreshToken.as_view({'get': 'list'}), name='token_refresh'),
     path('logout', Logout.as_view()),
     path('check-auth', UserInfo.as_view()),
     path('create-playlist-based-on-parameters',
