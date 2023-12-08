@@ -19,7 +19,7 @@ function MusicControl  (props: any)  {
                 }
             </div>
             <div className={styles.MusicControlPlaybackHolder}>
-                    <MusicControlPanel playlist={props.recommendedPlaylist} playlistSongsURI={props.playlistSongsURI} isPlaylistEmpty={props.isPlaylistEmpty} playlistChangeGuard={props.playlistChangeGuard}/>
+                    <MusicControlPanel playlist={props.recommendedPlaylist} playlistSongsURI={props.playlistSongsURI} isPlaylistEmpty={props.isPlaylistEmpty} playlistChangeGuard={props.playlistChangeGuard} setIsLoggedInSpotify={props.setIsLoggedInSpotify}/>
             </div>
         </div>
     )

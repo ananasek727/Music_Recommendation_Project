@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Link } from 'react-router-dom';
 import styles from './css/HomePage.module.css'
 
-function HomePage  ()  {
+function HomePage  (props: any)  {
     const [token, setToken] = React.useState(null);
     const [isLoggedInToSpotify, setIsLoggedInToSpotify] = React.useState(false);
     const [urlSpotifyLog, setUrlSpotifyLog] = React.useState('');
@@ -33,7 +33,7 @@ function HomePage  ()  {
     },[]);
 
     const handleTokenRequest = async () => {
-      await fetch(`http://127.0.0.1:8000/is-authenticated`, {
+      await fetch(`http://127.0.0.1:8000/access-token`, {
             method: "GET"
             })
             .then((response) => {
@@ -45,6 +45,7 @@ function HomePage  ()  {
             .then((data) => {
                 setToken(data.access_token);
                 console.log(data);
+                props.setIsLoggedInSpotify(true);
             })
             .catch((e) => {
               console.log("Error when trying to log in: " + e);

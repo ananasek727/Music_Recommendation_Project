@@ -7,7 +7,7 @@ import MusicParameters from '../components/MusicParameters';
 import PlaylistInterface from '../interface/PlaylistInterface';
 import MusicControl from '../components/MusicControl';
 
-function MusicRecommendationPage  ()  {
+function MusicRecommendationPage  (props: any)  {
     
   // get current height and width of the window to adjust size of WebCamFrame
   const [windowWidth, setWindowWidth] = React.useState(window.innerWidth*0.3);
@@ -46,36 +46,36 @@ function MusicRecommendationPage  ()  {
   const [isPlaylistEmpty, setIsPlaylistEmpty] = React.useState(true);
   const [playlistChangeGuard, setPlaylistChangeGuard] = React.useState(false);
 
-  const getRecommendedPlaylist = async () => {
-    await fetch(`http://127.0.0.1:8000/create-playlist-based-on-parameters`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          "emotion": "sad",
-          "personalization": "high",
-          "popularity": "mainstream",
-          "genres": []
-        })
-        })
-        .then((response) => {
-            if (response.ok) return response.json();
-            else {
-              throw new Error("ERROR " + response.status);
-            }
-        })
-        .then((data)=>{
-          setRecommendedPlaylist(data);
-          console.log(data);
-          const allURI: string[] = data.data.map((item: { uri: any; }) => item.uri);
-          setPlaylistSongURI(allURI);
-          console.log(allURI);
-          setIsPlaylistEmpty(false);
-          setPlaylistChangeGuard(!playlistChangeGuard);
-        })
-        .catch((e) => {
-        console.log("Error when trying to get playlist with recommended playlist: " + e);
-        });
-    }
+  // const getRecommendedPlaylist = async () => {
+  //   await fetch(`http://127.0.0.1:8000/create-playlist-based-on-parameters`, {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({
+  //         "emotion": "sad",
+  //         "personalization": "high",
+  //         "popularity": "mainstream",
+  //         "genres": []
+  //       })
+  //       })
+  //       .then((response) => {
+  //           if (response.ok) return response.json();
+  //           else {
+  //             throw new Error("ERROR " + response.status);
+  //           }
+  //       })
+  //       .then((data)=>{
+  //         setRecommendedPlaylist(data);
+  //         console.log(data);
+  //         const allURI: string[] = data.data.map((item: { uri: any; }) => item.uri);
+  //         setPlaylistSongURI(allURI);
+  //         console.log(allURI);
+  //         setIsPlaylistEmpty(false);
+  //         setPlaylistChangeGuard(!playlistChangeGuard);
+  //       })
+  //       .catch((e) => {
+  //       console.log("Error when trying to get playlist with recommended playlist: " + e);
+  //       });
+  //   }
 
     return (
       <div className={styles.mRPageFrame}>
@@ -109,12 +109,12 @@ function MusicRecommendationPage  ()  {
               <div className={styles.mRPageBoxLeftText}>
                 Music recommendation parameters
               </div>
-              <MusicParameters musicParameter1={musicParameter1} musicParameter2={musicParameter2} musicParameter3={musicParameter3} setMusicParameter1={setMusicParameter1} setMusicParameter2={setMusicParameter2} setMusicParameter3={setMusicParameter3} detectedEmotion={detectedEmotion} setRecommendedPlaylist={setRecommendedPlaylist} setPlaylistSongURI={setPlaylistSongURI} setIsPlaylistEmpty={setIsPlaylistEmpty} setPlaylistChangeGuard={setPlaylistChangeGuard} playlistChangeGuard={playlistChangeGuard}/>
+              <MusicParameters musicParameter1={musicParameter1} musicParameter2={musicParameter2} musicParameter3={musicParameter3} setMusicParameter1={setMusicParameter1} setMusicParameter2={setMusicParameter2} setMusicParameter3={setMusicParameter3} detectedEmotion={detectedEmotion} setRecommendedPlaylist={setRecommendedPlaylist} setPlaylistSongURI={setPlaylistSongURI} setIsPlaylistEmpty={setIsPlaylistEmpty} setPlaylistChangeGuard={setPlaylistChangeGuard} playlistChangeGuard={playlistChangeGuard} />
             </div>
           </div>
           {/* Music control section, right frame */}
           <div className={styles.mRPageBoxRight}>
-              <MusicControl playlist={recommendedPlaylist} playlistSongsURI={playlistSongsURI} isPlaylistEmpty={isPlaylistEmpty} playlistChangeGuard={playlistChangeGuard}/>
+              <MusicControl playlist={recommendedPlaylist} playlistSongsURI={playlistSongsURI} isPlaylistEmpty={isPlaylistEmpty} playlistChangeGuard={playlistChangeGuard} setIsLoggedInSpotify={props.setIsLoggedInSpotify}/>
           </div>
       </div>
     )

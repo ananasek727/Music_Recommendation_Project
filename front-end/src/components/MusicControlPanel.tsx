@@ -22,7 +22,7 @@ function MusicControlPanel  (props: any)  {
     },[]);
 
     const handleTokenRequest = async () => {
-      await fetch(`http://127.0.0.1:8000/is-authenticated`, {
+      await fetch(`http://127.0.0.1:8000/access-token`, {
             method: "GET"
             })
             .then((response) => {
@@ -35,11 +35,40 @@ function MusicControlPanel  (props: any)  {
                 setToken(data.access_token);
                 console.log(data);
                 setNonEmptyToken(true);
+                props.setIsLoggedInSpotify(true);
             })
             .catch((e) => {
               console.log("Error when trying to log in: " + e);
             });   
     }
+
+    const handleTokenRefresh = async () => {
+      await fetch(`http://127.0.0.1:8000/token-refresh`, {
+            method: "GET"
+            })
+            .then((response) => {
+              if (response.ok) return response.json();
+              else {
+                throw new Error("ERROR " + response.status);
+              }
+            })
+            .then(() => {
+               handleTokenRequest();
+            })
+            .catch((e) => {
+              console.log("Error when trying to refresh token: " + e);
+            });   
+    }
+
+    // refresh token every 55 minutes
+    React.useEffect(()=> {
+      const interval = setInterval(() => {
+        handleTokenRefresh();
+      }, 55 * 60 * 1000); // 55 minutes in milliseconds
+  
+      return () => clearInterval(interval);
+    },[])
+
     React.useEffect(()=>{
     if (window.Spotify !== null && nonEmptyToken) {
         const player = new window.Spotify.Player({
@@ -230,10 +259,12 @@ function MusicControlPanel  (props: any)  {
     }
     const [volume, setVolume] = React.useState<number>(50); // Initial value set to 50
     const [tempVolume, setTempVolume] = React.useState<number | null>(null);
+
     const handleVolumeSliderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = parseInt(event.target.value, 10);
       setTempVolume(newValue);
     };
+
     const handleVolumeSliderRelease = () => {
       if (tempVolume !== null) {
         setVolume(tempVolume);
@@ -278,6 +309,7 @@ function MusicControlPanel  (props: any)  {
             <button className={styles.MusicControlPanelButton} onClick={nextTrack} disabled={props.isPlaylistEmpty}>Next track</button>
 
             <input
+              className={styles.MusicControlPanelSlider}
               disabled={props.isPlaylistEmpty}
               type="range"
               min={0}

@@ -11,6 +11,8 @@
     background-color: beige;
     margin: 20px;
     font-size: large;
+    width: 100%;
+    display: flex;
 }
 
 .navBarButton {
