@@ -1,42 +1,17 @@
+import json
 from typing import Union
 from urllib.parse import urlencode
 from .models import SpotifyToken, Song
 from django.utils import timezone
 from datetime import timedelta
-from .credentials import CLIENT_ID, CLIENT_SECRET
+from .credentials import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI
 from requests import post, put, get
 
 
 BASE_URL = "https://api.spotify.com/v1/"
 
 
-def get_user_tokens(session_id):
-    user_tokens = SpotifyToken.objects.filter(user=session_id)
-    print(user_tokens)
-    if user_tokens.exists():
-        return user_tokens[0]
-    else:
-        return None
-
-
-def update_or_create_user_tokens(session_id, access_token, token_type, expires_in, refresh_token):
-    tokens = get_user_tokens(session_id)
-    expires_in = timezone.now() + timedelta(seconds=expires_in)
-
-    if tokens:
-        tokens.access_token = access_token
-        tokens.refresh_token = refresh_token
-        tokens.expires_in = expires_in
-        tokens.token_type = token_type
-        tokens.save(update_fields=['access_token',
-                                   'refresh_token', 'expires_in', 'token_type'])
-    else:
-        tokens = SpotifyToken(user=session_id, access_token=access_token,
-                              refresh_token=refresh_token, token_type=token_type, expires_in=expires_in)
-        tokens.save()
-
-
-def delete_user_tokens() -> None:
+def delete_spotify_tokens() -> None:
     SpotifyToken.objects.all().delete()
 
 
@@ -44,41 +19,89 @@ def delete_songs() -> None:
     Song.objects.all().delete()
 
 
-def is_spotify_authenticated(session_id):
-    # TODO: refresh tokens?????
-    tokens = get_user_tokens(session_id)
-    if tokens:
-        expiry = tokens.expires_in
-        if expiry <= timezone.now():
-            refresh_spotify_token(session_id)
-        return True
+def create_spotify_token(request):
+    code = request.GET.get('code')
+    error = request.GET.get('error')
 
-    return False
+    response = post(
+        'https://accounts.spotify.com/api/token',
+        data={
+            'grant_type': 'authorization_code',
+            'code': code,
+            'redirect_uri': REDIRECT_URI,
+            'client_id': CLIENT_ID,
+            'client_secret': CLIENT_SECRET
+        }
+    )
+
+    if not str(response.status_code).startswith('2'):
+        raise Exception(f"Error: {response.status_code}")
+
+    if not request.session.exists(request.session.session_key):
+        request.session.create()
+
+    delete_spotify_tokens()
+
+    content = json.loads(response.content.decode('utf-8'))
+    SpotifyToken(
+        user=request.session.session_key,
+        refresh_token=content['refresh_token'],
+        access_token=content['access_token'],
+        expires_in=timezone.now() + timedelta(seconds=content['expires_in']),
+        token_type=content['token_type']
+    ).save()
 
 
-def refresh_spotify_token(session_id):
-    refresh_token = get_user_tokens(session_id).refresh_token
+def refresh_spotify_token():
+    spotify_tokens = SpotifyToken.objects.all()
+    if len(spotify_tokens) > 1:
+        raise Exception("Too many spotify tokens saved in database.")
+
+    if len(spotify_tokens) == 0:
+        return
+
+    spotify_token = spotify_tokens[0]
 
     response = post('https://accounts.spotify.com/api/token', data={
         'grant_type': 'refresh_token',
-        'refresh_token': refresh_token,
+        'refresh_token': spotify_token.refresh_token,
         'client_id': CLIENT_ID,
         'client_secret': CLIENT_SECRET
-    }).json()
+    })
 
-    access_token = response.get('access_token')
-    token_type = response.get('token_type')
-    expires_in = response.get('expires_in')
-    refresh_token = response.get('refresh_token')
+    if not str(response.status_code).startswith('2'):
+        raise Exception(f"Error: {response.status_code}")
 
-    update_or_create_user_tokens(
-        session_id, access_token, token_type, expires_in, refresh_token)
+    content = json.loads(response.content.decode('utf-8'))
+
+    spotify_token.access_token = content['access_token']
+    spotify_token.expires_in = timezone.now() + timedelta(seconds=content['expires_in'])
+    spotify_token.save()
 
 
-def execute_spotify_api_request(token, endpoint, post_=False, put_=False, request_data=None):
-    tokens = token
+def get_access_token():
+    spotify_token = SpotifyToken.objects.all()[0]
+    return spotify_token.access_token
+
+
+def is_authenticated() -> bool:
+    if not SpotifyToken.objects.exists():
+        return False
+
+    spotify_tokens = SpotifyToken.objects.all()
+    if len(spotify_tokens) != 1:
+        raise Exception("Too many spotify tokens saved in database.")
+
+    spotify_token = spotify_tokens[0]
+    if spotify_token.expires_in < timezone.now() + timedelta(seconds=60):
+        return False
+
+    return True
+
+
+def execute_spotify_api_request(endpoint, post_=False, put_=False, request_data=None):
     headers = {'Content-Type': 'application/json',
-               'Authorization': "Bearer " + tokens.access_token}
+               'Authorization': "Bearer " + get_access_token()}
 
     if post_:
         response = post(BASE_URL + endpoint, headers=headers, json=request_data)
@@ -88,7 +111,7 @@ def execute_spotify_api_request(token, endpoint, post_=False, put_=False, reques
         response = get(BASE_URL + endpoint, {}, headers=headers)
 
     if response.status_code not in [200, 201, 202, 204]:
-        raise Exception(f"Endpoint {endpoint} response: {response.status_code}")
+        raise Exception(f"Endpoint {endpoint}, response: {response.status_code}")
 
     try:
         return response.json()
@@ -96,39 +119,35 @@ def execute_spotify_api_request(token, endpoint, post_=False, put_=False, reques
         return {'message': f'Error occurred: {e}'}
 
 
-def get_users_top_artists(token: str):
+def get_users_top_artists():
     endpoint = "me/top/artists"
     request_data = urlencode({
         'limit': 10
     })
-    response = execute_spotify_api_request(token, f"{endpoint}?{request_data}")
-    # print("\n++++++++++++++++++++++++++++++++++")
+    response = execute_spotify_api_request(f"{endpoint}?{request_data}")
+
     artists_ids = []
     for artist in response['items']:
-        # print(artist['id'])
         artists_ids.append(artist['id'])
+
     return artists_ids
-    # print(response)
-    # return only artst uri / seed?
 
 
-def get_users_top_tracks(token: str):
+def get_users_top_tracks():
     endpoint = "me/top/tracks"
     request_data = urlencode({
         'limit': 10
     })
-    response = execute_spotify_api_request(token, f"{endpoint}?{request_data}")
-    # print("\n++++++++++++++++++++++++++++++++++")
-    # print(response)
+    response = execute_spotify_api_request(f"{endpoint}?{request_data}")
+
     track_ids = []
     for track in response['items']:
-        # print(track['id'])
         track_ids.append(track['id'])
+
     return track_ids
-    # return only tracks uri / seed?
 
 
-def get_recommendations(token: str, artists_seeds: str, tracks_seeds: str) -> list:
+def get_recommendations(artists_seeds: str, tracks_seeds: str) -> list:
     endpoint = "recommendations"
     request_data = urlencode({
         'limit': 10,
@@ -136,8 +155,8 @@ def get_recommendations(token: str, artists_seeds: str, tracks_seeds: str) -> li
         'seed_artists': artists_seeds,
         'seed_tracks': tracks_seeds
     })
-    response = execute_spotify_api_request(token, f"{endpoint}?{request_data}")
-    # print("\n++++++++++++++++++++++++++++++++++")
+    response = execute_spotify_api_request(f"{endpoint}?{request_data}")
+
     tracks = []
     for track in response['tracks']:
         artist_string = ""
@@ -165,16 +184,16 @@ def get_recommendations(token: str, artists_seeds: str, tracks_seeds: str) -> li
     # return only artst uri / seed?
 
 
-def get_user_id(token) -> str:
+def get_user_id() -> str:
     endpoint = "me/"
-    response = execute_spotify_api_request(token, endpoint)
+    response = execute_spotify_api_request(endpoint)
     # print(response)
     # print(response['id'])
     return response['id']
 
 
-def save_playlist(token: str, tracks: list[Song], name: str) -> None:
-    user_id = get_user_id(token)
+def save_playlist(tracks: list[Song], name: str) -> None:
+    user_id = get_user_id()
 
     # create playlist
     endpoint = f"users/{user_id}/playlists"
@@ -182,7 +201,7 @@ def save_playlist(token: str, tracks: list[Song], name: str) -> None:
         "name": name,
         "public": False
     }
-    response = execute_spotify_api_request(token, post_=True, endpoint=f"{endpoint}", request_data=request_data)
+    response = execute_spotify_api_request(post_=True, endpoint=f"{endpoint}", request_data=request_data)
     # print("--")
     # print(response)
 
@@ -201,7 +220,7 @@ def save_playlist(token: str, tracks: list[Song], name: str) -> None:
     request_data = {
         "uris": uris
     }
-    response = execute_spotify_api_request(token, post_=True, endpoint=f"{endpoint}", request_data=request_data)
+    response = execute_spotify_api_request(post_=True, endpoint=f"{endpoint}", request_data=request_data)
     # print(response)
     if 'error' in response:
         raise Exception(f"Error occurred during playlist creation: {response}")
@@ -209,9 +228,9 @@ def save_playlist(token: str, tracks: list[Song], name: str) -> None:
     # print("+++++++++++")
 
 
-def get_currently_playing_song(token) -> Union[dict, None]:
+def get_currently_playing_song() -> Union[dict, None]:
     endpoint = "me/player/currently-playing"
-    response = execute_spotify_api_request(token, endpoint)
+    response = execute_spotify_api_request(endpoint)
     # print(response)
     if 'error' in response:
         raise Exception(f"Error occurred during currently playing song retrival: {response}")
@@ -250,7 +269,7 @@ def get_currently_playing_song(token) -> Union[dict, None]:
     return currently_playing_song
 
 
-def add_songs_to_queue(token: str, device_id: str, song_uris: list[str]):
+def add_songs_to_queue(device_id: str, song_uris: list[str]):
     endpoint = "me/player/queue"
 
     for song_uri in song_uris:
@@ -258,62 +277,62 @@ def add_songs_to_queue(token: str, device_id: str, song_uris: list[str]):
             'uri': song_uri,
             'device_id': device_id
         })
-        response = execute_spotify_api_request(token, post_=True, endpoint=f"{endpoint}?{request_data}")
+        response = execute_spotify_api_request(post_=True, endpoint=f"{endpoint}?{request_data}")
         if 'error' in response:
             raise Exception(f"Error occurred during adding song {song_uri} to queue: {response}")
 
 
-def player_next(token: str, device_id: str):
+def player_next(device_id: str):
     endpoint = "me/player/next"
 
     request_data = urlencode({
         'device_id': device_id
     })
-    response = execute_spotify_api_request(token, post_=True, endpoint=f"{endpoint}?{request_data}")
+    response = execute_spotify_api_request(post_=True, endpoint=f"{endpoint}?{request_data}")
     if 'error' in response:
         raise Exception(f"Error occurred: {response}")
 
 
-def player_pause(token: str, device_id: str):
+def player_pause(device_id: str):
     endpoint = "me/player/pause"
 
     request_data = urlencode({
         'device_id': device_id
     })
-    response = execute_spotify_api_request(token, put_=True, endpoint=f"{endpoint}?{request_data}")
+    response = execute_spotify_api_request(put_=True, endpoint=f"{endpoint}?{request_data}")
     if 'error' in response:
         raise Exception(f"Error occurred: {response}")
 
 
-def player_play(token: str, device_id: str):
+def player_play(device_id: str):
     endpoint = "me/player/play"
 
     request_data = urlencode({
         'device_id': device_id
     })
-    response = execute_spotify_api_request(token, put_=True, endpoint=f"{endpoint}?{request_data}")
+    response = execute_spotify_api_request(put_=True, endpoint=f"{endpoint}?{request_data}")
     if 'error' in response:
         raise Exception(f"Error occurred: {response}")
 
 
-def player_transfer_playback(token: str, device_id: str):
+def player_transfer_playback(device_id: str):
     endpoint = "me/player"
 
     request_data = {
         'device_ids': [device_id]
     }
-    response = execute_spotify_api_request(token, put_=True, endpoint=f"{endpoint}", request_data=request_data)
+    response = execute_spotify_api_request(put_=True, endpoint=f"{endpoint}", request_data=request_data)
     if 'error' in response:
         raise Exception(f"Error occurred: {response}")
 
 
-def player_set_volume(token: str, volume: int):
+def player_set_volume(volume: int):
     endpoint = "me/player/volume"
 
     request_data = urlencode({
         'volume_percent': volume
     })
-    response = execute_spotify_api_request(token, put_=True, endpoint=f"{endpoint}?{request_data}")
+    response = execute_spotify_api_request(put_=True, endpoint=f"{endpoint}?{request_data}")
     if 'error' in response:
         raise Exception(f"Error occurred: {response}")
 
