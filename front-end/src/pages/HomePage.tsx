@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Link } from 'react-router-dom';
 import styles from './css/HomePage.module.css'
 
-function HomePage  ()  {
+function HomePage  (props: any)  {
     const [token, setToken] = React.useState(null);
     const [isLoggedInToSpotify, setIsLoggedInToSpotify] = React.useState(false);
     const [urlSpotifyLog, setUrlSpotifyLog] = React.useState('');
@@ -20,50 +20,20 @@ function HomePage  ()  {
             .then((data) => {
               setUrlSpotifyLog(data.url);
               console.log(data);
-              //window.open(data.url, "_blank");
-              //console.log("guess who is back");
+              window.location.href = data.url;
             })
             .catch((e) => {
               console.log("Error when trying to log in: " + e);
             });    
     }
-
-    // handle getting token 
     
-
+    
     React.useEffect(()=>{
-      const handleTokenRequest = async () => {
-        await fetch(`http://127.0.0.1:8000/is-authenticated`, {
-              method: "GET"
-              })
-              .then((response) => {
-                if (response.ok) return response.json();
-                else {
-                  throw new Error("ERROR " + response.status);
-                }
-              })
-              .then((data) => {
-                if(data.status == true){
-                  setToken(data.access_token);
-                  console.log(data);
-                }
-                console.log(data);
-                console.log("s");
-              })
-              .catch((e) => {
-                console.log("Error when trying to log in: " + e);
-              });   
-            if(token != '') return;
-           //  setTimeout(handleTokenRequest, 1000);    
-      }
-      
-          if(token === '') {
-           // handleTokenRequest();
-          }
-    },[urlSpotifyLog]);
+      handleTokenRequest();
+    },[]);
 
     const handleTokenRequest = async () => {
-      await fetch(`http://127.0.0.1:8000/is-authenticated`, {
+      await fetch(`http://127.0.0.1:8000/access-token`, {
             method: "GET"
             })
             .then((response) => {
@@ -73,18 +43,13 @@ function HomePage  ()  {
               }
             })
             .then((data) => {
-              if(data.status == true){
                 setToken(data.access_token);
                 console.log(data);
-              }
-              console.log(data);
-              console.log("s");
+                props.setIsLoggedInSpotify(true);
             })
             .catch((e) => {
               console.log("Error when trying to log in: " + e);
             });   
-          if(token != '') return;
-         //  setTimeout(handleTokenRequest, 1000);    
     }
     return (
       <div className={styles.homePageFrame}>
@@ -92,13 +57,17 @@ function HomePage  ()  {
             <div className={styles.homePageDescription}>
                 Description
             </div>
-            <button onClick={handleSpotifyLogin}>Log in</button>
-            <button onClick={handleTokenRequest}>token</button>
-            <Link to="/music">
-                <button className={styles.homePageButton}>
-                    Music recommendation
-                </button>
-            </Link>  
+            {token === null ? 
+              <button onClick={handleSpotifyLogin} className={styles.homePageButton}>Log in</button>
+            :
+              <>
+              <Link to="/music">
+                  <button className={styles.homePageButton}>
+                      Music recommendation
+                  </button>
+              </Link>  
+              </>
+            }
           </div>
       </div>
     )

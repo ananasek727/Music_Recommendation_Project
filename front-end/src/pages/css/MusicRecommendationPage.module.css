@@ -9,6 +9,9 @@
 
 /* Left box */
 .mRPageBoxLeft {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     min-height: 70vh;
     max-height: 70vh;
     min-width: 45vw;
@@ -63,7 +66,7 @@
     max-height: 35vh;
     min-width: 100%;
     max-width: 100%;
-    background-color: blueviolet;
+    /* background-color: blueviolet; */
     margin-top: 30px;
     display: flex;
     justify-content: center;
@@ -73,11 +76,11 @@
 /* Music parameters choice */
 .MRPageBoxLeftParametersFrame{
     position: relative;
-    min-height: 35vh;
-    max-height: 35vh;
+    min-height: 175px;
+    max-height: 175px;
     min-width: 100%;
     max-width: 100%;
-    background-color:darkgoldenrod;
+    /* background-color:darkgoldenrod; */
 }
 
 /* Right box */
