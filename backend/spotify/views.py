@@ -1,10 +1,9 @@
 from django.shortcuts import redirect
 from .util import (execute_spotify_api_request, delete_spotify_tokens, create_spotify_token,
-                   get_users_top_artists, get_users_top_tracks,
                    get_recommendations, delete_songs, save_playlist, get_currently_playing_song, add_songs_to_queue,
                    player_next, player_pause, player_play, player_transfer_playback, player_set_volume,
                    refresh_spotify_token, is_authenticated, get_access_token)
-from .credentials import REDIRECT_URI, CLIENT_SECRET, CLIENT_ID
+from .credentials import REDIRECT_URI, CLIENT_ID
 from rest_framework.views import APIView
 from requests import Request
 from rest_framework.response import Response
@@ -67,8 +66,8 @@ class AccessToken(viewsets.ModelViewSet):
 
 class RefreshToken(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
-        if not is_authenticated():
-            return Response({'message': 'User not authenticated.'}, status=status.HTTP_401_UNAUTHORIZED)
+        if not SpotifyToken.objects.exists():
+            return Response({'message': 'User not logged in.'}, status=status.HTTP_401_UNAUTHORIZED)
 
         try:
             refresh_spotify_token()
@@ -80,8 +79,7 @@ class RefreshToken(viewsets.ModelViewSet):
 
 class Logout(APIView):
     def delete(self, request, format=None):
-        user_tokens = SpotifyToken.objects.all()
-        if len(user_tokens) == 0:
+        if not SpotifyToken.objects.exists():
             return Response({'message': 'User not logged in.'}, status=status.HTTP_200_OK)
 
         try:
@@ -117,14 +115,16 @@ class PlaylistBasedOnParametersView(viewsets.ModelViewSet):
             return Response({'message': 'User not authenticated.'}, status=status.HTTP_401_UNAUTHORIZED)
 
         try:
-            # print(f"db songs: {Song.objects.all()}")
             delete_songs()
-            # print(f"db songs after delete: {Song.objects.all()}")
+            # print(request.data)
+            # request_data = get_recommendation_request_parameters(request.data)
+            # get_recommendations(request)
 
-            top_artists_ids = get_users_top_artists()
-            top_tracks_ids = get_users_top_tracks()
-            tracks = get_recommendations(f"{top_artists_ids[0]},{top_artists_ids[2]},{top_artists_ids[3]}",
-                                         f"{top_tracks_ids[1]},{top_tracks_ids[3]}")
+            # top_artists_ids = get_users_top_artists()
+            # top_tracks_ids = get_users_top_tracks()
+            # tracks = get_recommendations(f"{top_artists_ids[0]},{top_artists_ids[2]},{top_artists_ids[3]}",
+            #                              f"{top_tracks_ids[1]},{top_tracks_ids[3]}")
+            tracks = get_recommendations(request.data)
 
             for track in tracks:
                 Song(
@@ -157,7 +157,6 @@ class SavePlaylistView(viewsets.ModelViewSet):
             return Response({'message': 'User not authenticated.'}, status=status.HTTP_401_UNAUTHORIZED)
 
         try:
-            # print(f"db songs: {Song.objects.all()}")
             tracks = Song.objects.all()
             save_playlist(tracks, request.data['name'])
 
