@@ -19,7 +19,7 @@ def delete_songs() -> None:
     Song.objects.all().delete()
 
 
-def create_spotify_token(request):
+def create_spotify_token(request) -> None:
     code = request.GET.get('code')
     error = request.GET.get('error')
 
@@ -52,7 +52,7 @@ def create_spotify_token(request):
     ).save()
 
 
-def refresh_spotify_token():
+def refresh_spotify_token() -> None:
     spotify_tokens = SpotifyToken.objects.all()
     if len(spotify_tokens) > 1:
         raise Exception("Too many spotify tokens saved in database.")
@@ -79,9 +79,14 @@ def refresh_spotify_token():
     spotify_token.save()
 
 
-def get_access_token():
+def get_access_token() -> str:
     spotify_token = SpotifyToken.objects.all()[0]
     return spotify_token.access_token
+
+
+def get_refresh_token() -> str:
+    spotify_token = SpotifyToken.objects.all()[0]
+    return spotify_token.refresh_token
 
 
 def is_authenticated() -> bool:
@@ -99,7 +104,8 @@ def is_authenticated() -> bool:
     return True
 
 
-def execute_spotify_api_request(endpoint, post_=False, put_=False, request_data=None):
+def execute_spotify_api_request(endpoint: str, post_: bool = False, put_: bool = False, request_data: dict = None) \
+        -> dict:
     headers = {'Content-Type': 'application/json',
                'Authorization': "Bearer " + get_access_token()}
 
@@ -110,8 +116,16 @@ def execute_spotify_api_request(endpoint, post_=False, put_=False, request_data=
     else:
         response = get(BASE_URL + endpoint, {}, headers=headers)
 
-    if response.status_code not in [200, 201, 202, 204]:
-        raise Exception(f"Endpoint {endpoint}, response: {response.status_code}")
+    if not str(response.status_code).startswith("2"):
+        message_str = ""
+        if response.status_code == 429:
+            retry_after_s = int(response.headers['Retry-After'])
+            delta = timedelta(seconds=retry_after_s)
+            hours, remainder = divmod(delta.seconds, 3600)
+            minutes, seconds = divmod(remainder, 60)
+            formatted_time = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+            message_str = f", Retry-After: {formatted_time}"
+        raise Exception(f"Endpoint {endpoint}, response: {response.status_code}{message_str}")
 
     try:
         return response.json()
@@ -119,7 +133,7 @@ def execute_spotify_api_request(endpoint, post_=False, put_=False, request_data=
         return {'message': f'Error occurred: {e}'}
 
 
-def get_users_top_artists(limit=10, offset=0):
+def get_users_top_artists(limit=10, offset=0) -> list:
     endpoint = "me/top/artists"
     request_data = urlencode({
         'limit': limit,
@@ -134,7 +148,7 @@ def get_users_top_artists(limit=10, offset=0):
     return artists_ids
 
 
-def get_users_top_tracks(limit=10, offset=0):
+def get_users_top_tracks(limit=10, offset=0) -> list:
     endpoint = "me/top/tracks"
     request_data = urlencode({
         'limit': limit,
@@ -324,32 +338,33 @@ def get_recommendations(parameters) -> list:
     endpoint = "recommendations"
 
     tracks = []
-    tries = 0
-    while len(tracks) < 10 or tries < 5:
-        tries += 1
-        request_data = urlencode(get_recommendation_request_parameters(parameters))
-        response = execute_spotify_api_request(f"{endpoint}?{request_data}")
+    # tries = 0
+    # while len(tracks) < 10 or tries < 5:
+    #     tries += 1
+    request_data = urlencode(get_recommendation_request_parameters(parameters))
+    response = execute_spotify_api_request(f"{endpoint}?{request_data}")
 
-        for track in response['tracks']:
-            artist_string = ""
-            for i, artist in enumerate(track['artists']):
-                if i > 0:
-                    artist_string += ", "
-                name = artist['name']
-                artist_string += name
+    for track in response['tracks']:
+        artist_string = ""
+        for i, artist in enumerate(track['artists']):
+            if i > 0:
+                artist_string += ", "
+            name = artist['name']
+            artist_string += name
 
-            duration_seconds = int(track['duration_ms']) / 1000
-            minutes, seconds = divmod(duration_seconds, 60)
-            formatted_duration = "{:d}:{:02}".format(int(minutes), int(seconds))
+        duration_seconds = int(track['duration_ms']) / 1000
+        minutes, seconds = divmod(duration_seconds, 60)
+        formatted_duration = "{:d}:{:02}".format(int(minutes), int(seconds))
 
-            tracks.append({
-                'title': track['name'],
-                'artist_str': artist_string,
-                'duration': formatted_duration,
-                'image_url': track['album']['images'][0]['url'],
-                'id': track['id'],
-                'uri': track['uri']
-            })
+        tracks.append({
+            'title': track['name'],
+            'artist_str': artist_string,
+            'duration': formatted_duration,
+            'image_url': track['album']['images'][0]['url'],
+            'id': track['id'],
+            'uri': track['uri']
+        })
+
 
     return tracks
 
@@ -428,7 +443,7 @@ def get_currently_playing_song() -> Union[dict, None]:
     return currently_playing_song
 
 
-def add_songs_to_queue(device_id: str, song_uris: list[str]):
+def add_songs_to_queue(device_id: str, song_uris: list[str]) -> None:
     endpoint = "me/player/queue"
 
     for song_uri in song_uris:
@@ -441,7 +456,7 @@ def add_songs_to_queue(device_id: str, song_uris: list[str]):
             raise Exception(f"Error occurred during adding song {song_uri} to queue: {response}")
 
 
-def player_next(device_id: str):
+def player_next(device_id: str) -> None:
     endpoint = "me/player/next"
 
     request_data = urlencode({
@@ -452,7 +467,7 @@ def player_next(device_id: str):
         raise Exception(f"Error occurred: {response}")
 
 
-def player_pause(device_id: str):
+def player_pause(device_id: str) -> None:
     endpoint = "me/player/pause"
 
     request_data = urlencode({
@@ -463,7 +478,7 @@ def player_pause(device_id: str):
         raise Exception(f"Error occurred: {response}")
 
 
-def player_play(device_id: str):
+def player_play(device_id: str) -> None:
     endpoint = "me/player/play"
 
     request_data = urlencode({
@@ -474,7 +489,7 @@ def player_play(device_id: str):
         raise Exception(f"Error occurred: {response}")
 
 
-def player_transfer_playback(device_id: str):
+def player_transfer_playback(device_id: str) -> None:
     endpoint = "me/player"
 
     request_data = {
@@ -485,7 +500,7 @@ def player_transfer_playback(device_id: str):
         raise Exception(f"Error occurred: {response}")
 
 
-def player_set_volume(volume: int):
+def player_set_volume(volume: int) -> None:
     endpoint = "me/player/volume"
 
     request_data = urlencode({

@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.core.validators import MinValueValidator, MaxValueValidator
 from . import POPULARITY_CHOICES, PERSONALIZATION_CHOICES, EMOTIONS
 
 
@@ -41,7 +42,12 @@ class DeviceIdSerializer(serializers.Serializer):
 
 
 class VolumeSerializer(serializers.Serializer):
-    volume_percent = serializers.IntegerField()
+    volume_percent = serializers.IntegerField(
+        validators=[
+            MinValueValidator(0, message='Volume must be greater than or equal to 0.'),
+            MaxValueValidator(100, message='Volume must be less than or equal to 100.')
+        ]
+    )
 
     class Meta:
         fields = ['volume_percent']

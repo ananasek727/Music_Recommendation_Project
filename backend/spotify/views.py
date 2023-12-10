@@ -2,7 +2,7 @@ from django.shortcuts import redirect
 from .util import (execute_spotify_api_request, delete_spotify_tokens, create_spotify_token,
                    get_recommendations, delete_songs, save_playlist, get_currently_playing_song, add_songs_to_queue,
                    player_next, player_pause, player_play, player_transfer_playback, player_set_volume,
-                   refresh_spotify_token, is_authenticated, get_access_token)
+                   refresh_spotify_token, is_authenticated, get_access_token, get_refresh_token)
 from .credentials import REDIRECT_URI, CLIENT_ID
 from rest_framework.views import APIView
 from requests import Request
@@ -12,24 +12,13 @@ from .models import SpotifyToken, Song
 from rest_framework import viewsets
 from .serializers import (ParametersSerializer, SavePlaylistSerializer, AddItemsToQueueSerializer, DeviceIdSerializer,
                           VolumeSerializer)
+from . import SCOPES
 
 
 class AuthURL(APIView):
     def get(self, request, format=None):
-        # TODO: scopes -> gdzies indziej trzymac
-        scopes = (
-            'user-top-read '
-            'streaming '
-            'user-read-email '
-            'user-read-private '
-            'user-read-playback-state '
-            'user-modify-playback-state '
-            'user-read-currently-playing '
-            'playlist-modify-private '
-            'playlist-modify-public '
-        )
         url = Request('GET', 'https://accounts.spotify.com/authorize', params={
-            'scope': scopes,
+            'scope': SCOPES,
             'response_type': 'code',
             'redirect_uri': REDIRECT_URI,
             'client_id': CLIENT_ID
@@ -56,9 +45,10 @@ class AccessToken(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         try:
             if not is_authenticated():
-                return Response({'message:' 'User not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
+                return Response({'message': 'User not authenticated.'}, status=status.HTTP_401_UNAUTHORIZED)
             else:
-                return Response({'access_token': get_access_token()}, status=status.HTTP_200_OK)
+                return Response({'access_token': get_access_token(),
+                                 'refresh_token': get_refresh_token()}, status=status.HTTP_200_OK)
 
         except Exception as e:
             return Response({'message': f'Error occurred: {e}.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -96,10 +86,12 @@ class UserInfo(APIView):
         if not is_authenticated():
             return Response({'message': 'User not authenticated.'}, status=status.HTTP_401_UNAUTHORIZED)
 
-        endpoint = "me/"
-        response = execute_spotify_api_request(endpoint)
-
-        return Response(response, status=status.HTTP_200_OK)
+        try:
+            endpoint = "me/"
+            response = execute_spotify_api_request(endpoint)
+            return Response(response, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'message': f'Error occurred: {e}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class PlaylistBasedOnParametersView(viewsets.ModelViewSet):
@@ -116,16 +108,8 @@ class PlaylistBasedOnParametersView(viewsets.ModelViewSet):
 
         try:
             delete_songs()
-            # print(request.data)
-            # request_data = get_recommendation_request_parameters(request.data)
-            # get_recommendations(request)
 
-            # top_artists_ids = get_users_top_artists()
-            # top_tracks_ids = get_users_top_tracks()
-            # tracks = get_recommendations(f"{top_artists_ids[0]},{top_artists_ids[2]},{top_artists_ids[3]}",
-            #                              f"{top_tracks_ids[1]},{top_tracks_ids[3]}")
             tracks = get_recommendations(request.data)
-
             for track in tracks:
                 Song(
                     title=track['title'],
@@ -135,8 +119,6 @@ class PlaylistBasedOnParametersView(viewsets.ModelViewSet):
                     id=track['id'],
                     uri=track['uri']
                 ).save()
-
-            # print(f"db songs: {Song.objects.all()}")
 
         except Exception as e:
             return Response({'message': f'Error occurred: {e}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -163,7 +145,7 @@ class SavePlaylistView(viewsets.ModelViewSet):
         except Exception as e:
             return Response({'message': f'Error occurred: {e}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        return Response({'message': 'Playlist saved successfully'}, status=status.HTTP_200_OK)
+        return Response({'message': 'Playlist saved successfully.'}, status=status.HTTP_200_OK)
 
 
 class CurrentlyPlayingSongView(APIView):

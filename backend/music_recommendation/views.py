@@ -1,19 +1,12 @@
-from typing import Union
-
-from django.shortcuts import render
-from django.http import JsonResponse
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 
-# from .models import Song
-from .serializers import PhotoRequestSerializer #, ParametersSerializer
+from .serializers import PhotoRequestSerializer
 
 import cv2
 import numpy as np
 import base64
 from . import CONFIDENCE, net, emotion_model
-# from ..spotify.models import SpotifyToken
-
 
 # Create your views here.
 
@@ -90,8 +83,6 @@ class EmotionFromPhotoView(viewsets.ModelViewSet):
     serializer_class = PhotoRequestSerializer
 
     def create(self, request, *args, **kwargs):
-        print(type(request))
-        print(request)
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
             return Response({'message': 'Invalid request.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -102,44 +93,4 @@ class EmotionFromPhotoView(viewsets.ModelViewSet):
         except Exception as e:
             return Response({'message': f'Error: {e}.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        # TODO: Remove all songs from the database
         return Response({'emotion': emotion}, status=status.HTTP_200_OK)
-
-#
-# class PlaylistBasedOnParametersView(viewsets.ModelViewSet):
-#     serializer_class = ParametersSerializer
-#
-#     def create(self, request, *args, **kwargs):
-#         serializer = self.get_serializer(data=request.data)
-#
-#         if not serializer.is_valid():
-#             return Response({'message': 'Invalid request.'}, status=status.HTTP_400_BAD_REQUEST)
-#
-#         if not SpotifyToken.objects.exists():
-#             return Response({'message': 'Unauthorized user.'}, status=status.HTTP_401_UNAUTHORIZED)
-#         token = SpotifyToken.objects.last()
-#
-#
-#
-#
-#         # if user not authenticated:
-#         #     return Response({'message': 'Unauthorized user.'}, status=status.HTTP_401_UNAUTHORIZED)
-#
-#         # TODO: add songs to db, ge user data - spotify
-#
-#         response_data = {'tracks': []}
-#
-#         response_data['tracks'].append(
-#             {
-#                 'title': 'title',
-#                 'artist': 'artist_string',
-#                 'duration': 'duration',
-#                 'image_url': 'album_cover',
-#                 'id': 'song_id',
-#                 'uri': 'uri_address'
-#             }
-#         )
-#
-#         return Response(response_data, status=status.HTTP_200_OK)
-#
-

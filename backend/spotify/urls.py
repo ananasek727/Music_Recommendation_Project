@@ -2,13 +2,13 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
-    path('get-auth-url', AuthURL.as_view()),
-    path('spotify/redirect', spotify_callback),
+    path('get-auth-url', AuthURL.as_view(), name='get_auth_url'),
+    path('spotify/redirect', spotify_callback, name='spotify_redirect'),
     path('is-authenticated', IsAuthenticated.as_view({'get': 'list'}), name='is_authenticated'),
     path('access-token', AccessToken.as_view({'get': 'list'}), name='access_token'),
     path('token-refresh', RefreshToken.as_view({'get': 'list'}), name='token_refresh'),
-    path('logout', Logout.as_view()),
-    path('check-auth', UserInfo.as_view()),
+    path('logout', Logout.as_view(), name='logout'),
+    path('check-auth', UserInfo.as_view(), name='check_auth'),
     path('create-playlist-based-on-parameters',
          view=PlaylistBasedOnParametersView.as_view({'post': 'create'}),
          name='create_playlist_based_on_parameters'),
