@@ -1,0 +1,16 @@
+# To run the tests for the logged-in to Spotify user some parameters need to be filled in:
+
+# to get an access token and a refresh token
+# 1. run the application (python .\manage.py runserver)
+# 2. go to http://127.0.0.1:8000/get-auth-url and log in to spotify using the given link
+# 3. copy the access and refresh tokens from http://127.0.0.1:8000/access-token
+# - the token is valid for an hour, after that time go to http://127.0.0.1:8000/token-refresh and copy the new access
+#   token from http://127.0.0.1:8000/access-token
+"access_token": ""
+"refresh_token": ""
+
+# to get device id:
+# 1. log in to https://developer.spotify.com/ with spotify credentials
+# 2. play music in spotify on some device
+# 3. get device id from https://developer.spotify.com/documentation/web-api/reference/get-information-about-the-users-current-playback
+"device_id": ""
