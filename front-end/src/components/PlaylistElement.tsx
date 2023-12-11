@@ -4,7 +4,7 @@ import styles from './css/PlaylistElement.module.css';
 function PlaylistElement  (props: any)  {
 
     return (
-        <div className={styles.PlaylistElementFrame}>
+        <div data-testid="playlist-element" className={styles.PlaylistElementFrame}>
       {/* Left side with one row */}
             <div className={styles.PlaylistElementLeft}>
                 <img className={styles.PlaylistElementImage} src={props.song.image_url}
