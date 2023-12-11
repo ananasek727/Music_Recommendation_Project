@@ -8,7 +8,6 @@ global.fetch = jest.fn();
 
 describe('HomePage', () => {
   afterEach(() => {
-    // Clear the mock calls between tests
     jest.clearAllMocks();
   });
   it('renders correctly', async () => {

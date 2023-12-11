@@ -10,10 +10,10 @@ test('renders App component', () => {
 
 test('renders home page', () => {
   render(<App />);
-  expect(screen.getByText('Description')).toBeInTheDocument(); // Adjust text as per your actual content
+  expect(screen.getByText('Description')).toBeInTheDocument(); // Adjust text as per content
 });
 test('renders navBar', () => {
   render(<App />);
-  expect(screen.getByText('Mus4You')).toBeInTheDocument(); // Adjust text as per your actual content
+  expect(screen.getByText('Mus4You')).toBeInTheDocument(); // Adjust text as per content
 });
 
