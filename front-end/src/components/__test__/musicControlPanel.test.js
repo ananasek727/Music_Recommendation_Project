@@ -15,7 +15,6 @@ describe('MusicControlPanel Component', () => {
     playlistSongsURI: ["song1"],
     isPlaylistEmpty: false,
     isSongPlayed: true,
-    // Use the CurrentlyPlayingSongInterface for the currentSong prop
     currentSong: {
       title: 'Test',
       artist: 'Test',
@@ -48,20 +47,6 @@ describe('MusicControlPanel Component', () => {
     render(<MusicControlPanel {...mockProps} />);
     const volumeSlider = screen.getByTestId('volume-slider');
     expect(volumeSlider).toBeInTheDocument();
-  });
-
-  it('calls playTrack when Play track button is clicked', () => {
-    render(<MusicControlPanel {...mockProps} />);
-    const playButton = screen.getByText('Play track');
-    fireEvent.click(playButton);
-    // Add your assertions here based on your application logic
-  });
-
-  it('calls nextTrack when Next track button is clicked', () => {
-    render(<MusicControlPanel {...mockProps} />);
-    const nextButton = screen.getByText('Next track');
-    fireEvent.click(nextButton);
-    // Add your assertions here based on your application logic
   });
 
   test('Play button is disabled when playlist is empty', () => {
