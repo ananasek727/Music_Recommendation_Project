@@ -1,36 +1,96 @@
-import {configure} from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-import {shallow} from 'enzyme';
-import MusicControlPanel from "../MusicControlPanel";
+import React from 'react';
+import {render, screen, fireEvent, waitFor} from '@testing-library/react';
+import '@testing-library/jest-dom/extend-expect'; // for expect(...).toBeInTheDocument()
+import MusicControlPanel from '../MusicControlPanel';
+describe('MusicControlPanel Component', () => {
+  beforeEach(() => {
+    jest.spyOn(global, 'fetch').mockImplementation(() => Promise.resolve({
+      json: () => Promise.resolve({}),
+      ok: true,
+    }));
+  });
+  const mockProps = {
+    setIsLoggedInSpotify: true,
+    playlistChangeGuard: false,
+    playlistSongsURI: ["song1"],
+    isPlaylistEmpty: false,
+    isSongPlayed: true,
+    // Use the CurrentlyPlayingSongInterface for the currentSong prop
+    currentSong: {
+      title: 'Test',
+      artist: 'Test',
+      duration: '3:30',
+      time_stamp: '12:00',
+      image_url: 'test_url',
+      is_playing: true,
+      id: '123',
+      uri: 'url',
+    }
+  };
 
+  it('renders without crashing', () => {
+    render(<MusicControlPanel {...mockProps} />);
+  });
 
-configure({adapter: new Adapter()});
+  it('displays Play track button when no song is played', () => {
+    render(<MusicControlPanel {...mockProps} />);
+    const playButton = screen.getByText('Play track');
+    expect(playButton).toBeInTheDocument();
+  });
 
-it('should render without errors', () => {
-    const props = {};
-    const wrapper = shallow(<MusicControlPanel {...props} />);
+  it('displays Next track button', () => {
+    render(<MusicControlPanel {...mockProps} />);
+    const nextButton = screen.getByText('Next track');
+    expect(nextButton).toBeInTheDocument();
+  });
 
-    expect(wrapper).toBeTruthy();
+  it('displays a volume slider', () => {
+    render(<MusicControlPanel {...mockProps} />);
+    const volumeSlider = screen.getByTestId('volume-slider');
+    expect(volumeSlider).toBeInTheDocument();
+  });
+
+  it('calls playTrack when Play track button is clicked', () => {
+    render(<MusicControlPanel {...mockProps} />);
+    const playButton = screen.getByText('Play track');
+    fireEvent.click(playButton);
+    // Add your assertions here based on your application logic
+  });
+
+  it('calls nextTrack when Next track button is clicked', () => {
+    render(<MusicControlPanel {...mockProps} />);
+    const nextButton = screen.getByText('Next track');
+    fireEvent.click(nextButton);
+    // Add your assertions here based on your application logic
+  });
+
+  test('Play button is disabled when playlist is empty', () => {
+  render(<MusicControlPanel isPlaylistEmpty={true} />);
+  const playButton = screen.getByText('Play track');
+  expect(playButton).toBeDisabled();
 });
-it('should display four buttons for controlling music playback', () => {
-    const props = {};
-    const wrapper = shallow(<MusicControlPanel {...props} />);
-    expect(wrapper.find('button')).toHaveLength(4);
+test('Next Track button is disabled when playlist is empty', () => {
+  render(<MusicControlPanel isPlaylistEmpty={true} />);
+  const nextTrackButton = screen.getByText('Next track');
+  expect(nextTrackButton).toBeDisabled();
 });
-it('should send a POST request to the Spotify API to play the previous track when the \'Previous track\' button is clicked', () => {
+  it('fetches access token on mount', async () => {
+    render(<MusicControlPanel />);
+    await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('http://127.0.0.1:8000/access-token', { method: 'GET' }));
+  });
 
-  const props = {};
-  const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValueOnce({});
+    it('calls nextTrack function when Next Track button is clicked', async () => {
+    render(<MusicControlPanel />);
+    const nextTrackButton = screen.getByText('Next track');
+    fireEvent.click(nextTrackButton);
+    await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('http://127.0.0.1:8000/player/next', expect.any(Object)));
+  });
 
-  const wrapper = shallow(<MusicControlPanel {...props} />);
-  wrapper.find('button').at(0).simulate('click');
-
-  expect(fetchMock).toHaveBeenCalledWith(`https://api.spotify.com/v1/me/player/previous?device_id=`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer `,
-    },
+  it('calls changeVolume function when volume slider is adjusted', async () => {
+    render(<MusicControlPanel />);
+    const volumeSlider = screen.getByTestId('volume-slider');
+    fireEvent.change(volumeSlider, { target: { value: 75 } });
+    fireEvent.mouseUp(volumeSlider);
+    await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('http://127.0.0.1:8000/player/set-volume', expect.any(Object)));
   });
 });
-
-

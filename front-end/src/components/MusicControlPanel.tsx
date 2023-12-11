@@ -302,13 +302,14 @@ function MusicControlPanel  (props: any)  {
             </div>
             {isSongPlayed 
             ? 
-            <button className={styles.MusicControlPanelButton} onClick={pauseTrack} disabled={props.isPlaylistEmpty}>Pause track</button> 
+            <button  className={styles.MusicControlPanelButton} onClick={pauseTrack} disabled={props.isPlaylistEmpty}>Pause track</button>
             : 
             <button className={styles.MusicControlPanelButton} onClick={playTrack} disabled={props.isPlaylistEmpty}>Play track</button>}
             
             <button className={styles.MusicControlPanelButton} onClick={nextTrack} disabled={props.isPlaylistEmpty}>Next track</button>
 
             <input
+              data-testid="volume-slider"
               className={styles.MusicControlPanelSlider}
               disabled={props.isPlaylistEmpty}
               type="range"
@@ -322,7 +323,7 @@ function MusicControlPanel  (props: any)  {
 
             </div>
             {currentSong &&
-              <CurrentlyPlayingSong song={currentSong}/>
+              <CurrentlyPlayingSong data-testid="currently-playing-song" song={currentSong}/>
             }
           
         </div>
