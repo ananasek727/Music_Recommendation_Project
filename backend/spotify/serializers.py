@@ -9,7 +9,8 @@ class ParametersSerializer(serializers.Serializer):
     popularity = serializers.ChoiceField(choices=POPULARITY_CHOICES)
     genres = serializers.ListField(
         child=serializers.CharField(),
-        max_length=3
+        max_length=3,
+        min_length=1
     )
 
     class Meta:

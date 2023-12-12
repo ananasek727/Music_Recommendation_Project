@@ -191,28 +191,36 @@ def get_top_tracks_rand_seed(indexes: list[(int, int)]) -> str:
     return ','.join(tracks_ids)
 
 
-def get_rand_genres_seed(num_of_genre_seeds: int) -> str:
-    endpoint = "recommendations/available-genre-seeds"
-    response = execute_spotify_api_request(endpoint)
-    selected_genres = random.sample(response['genres'], min(num_of_genre_seeds, len(response['genres'])))
-    return ','.join(selected_genres)
+# def get_rand_genres_seed(num_of_genre_seeds: int) -> str:
+#     endpoint = "recommendations/available-genre-seeds"
+#     response = execute_spotify_api_request(endpoint)
+#     selected_genres = random.sample(response['genres'], min(num_of_genre_seeds, len(response['genres'])))
+#     return ','.join(selected_genres)
 
 
 def set_popularity_range(parameters: dict, data: dict) -> None:
+    # popularity_mapping = {
+    #     'mainstream': (80, 100),
+    #     'medium': (40, 85),
+    #     'low': (10, 40)
+    # }
+    #
+    # data['min_popularity'], data['max_popularity'] = popularity_mapping[parameters['popularity']]
+
     popularity_mapping = {
-        'mainstream': (80, 100),
-        'medium': (40, 85),
-        'low': (10, 40)
+        'mainstream': 100,
+        'medium': 70,
+        'low': 20
     }
 
-    data['min_popularity'], data['max_popularity'] = popularity_mapping[parameters['popularity']]
+    data['target_popularity'] = popularity_mapping[parameters['popularity']]
 
 
 def set_genre_seeds(parameters: dict, data: dict) -> None:
-    if not parameters['genres']:
-        if parameters['personalization'] == 'low':
-            data['seed_genres'] = get_rand_genres_seed(5)
-        return
+    # if not parameters['genres']:
+    #     if parameters['personalization'] == 'low':
+    #         data['seed_genres'] = get_rand_genres_seed(5)
+    #     return
 
     data['seed_genres'] = ','.join(parameters['genres'])
 
@@ -237,12 +245,12 @@ def set_artists_and_songs_seeds(parameters: dict, data: dict) -> None:
                                                               (art_nums[2], art_nums[3])])
             data['seed_tracks'] = get_top_tracks_rand_seed([(track_nums[0], track_nums[2]),
                                                             (track_nums[3], track_nums[4])])
-        elif len(parameters['genres']) == 0:
-            data['seed_artists'] = get_top_artists_rand_seed([(art_nums[0], art_nums[1]),
-                                                              (art_nums[2], art_nums[3])])
-            data['seed_tracks'] = get_top_tracks_rand_seed([(track_nums[0], track_nums[1]),
-                                                            (track_nums[2], track_nums[3]),
-                                                            (track_nums[4], track_nums[5])])
+        # elif len(parameters['genres']) == 0:
+        #     data['seed_artists'] = get_top_artists_rand_seed([(art_nums[0], art_nums[1]),
+        #                                                       (art_nums[2], art_nums[3])])
+        #     data['seed_tracks'] = get_top_tracks_rand_seed([(track_nums[0], track_nums[1]),
+        #                                                     (track_nums[2], track_nums[3]),
+        #                                                     (track_nums[4], track_nums[5])])
 
     elif parameters['personalization'] == 'medium':
         if len(parameters['genres']) == 3:
@@ -257,65 +265,100 @@ def set_artists_and_songs_seeds(parameters: dict, data: dict) -> None:
             data['seed_tracks'] = get_top_tracks_rand_seed([(track_nums[-7], track_nums[-5]),
                                                             (track_nums[-4], track_nums[-3]),
                                                             (track_nums[-2], track_nums[-1])])
-        elif len(parameters['genres']) == 0:
-            data['seed_artists'] = get_top_artists_rand_seed([(art_nums[-5], art_nums[-3]),
-                                                              (art_nums[-2], art_nums[-1])])
-            data['seed_tracks'] = get_top_tracks_rand_seed([(track_nums[-7], track_nums[-5]),
-                                                            (track_nums[-4], track_nums[-3]),
-                                                            (track_nums[-2], track_nums[-1])])
+        # elif len(parameters['genres']) == 0:
+        #     data['seed_artists'] = get_top_artists_rand_seed([(art_nums[-5], art_nums[-3]),
+        #                                                       (art_nums[-2], art_nums[-1])])
+        #     data['seed_tracks'] = get_top_tracks_rand_seed([(track_nums[-7], track_nums[-5]),
+        #                                                     (track_nums[-4], track_nums[-3]),
+        #                                                     (track_nums[-2], track_nums[-1])])
 
 
 def set_emotion_parameters(emotion: str, data: dict) -> None:
     data['max_liveness'] = 0.8
 
     if emotion == 'angry':
-        data.update({'min_energy': 0.6, 'max_energy': 1, 'target_energy': 0.8})
-        data.update({'min_valence': 0.6, 'max_valence': 1, 'target_valence': 0.8})
-        # data.update({'min_loudness': '-60', 'max_loudness': '-20', 'target_loudness': -45})
-        data.update({'min_mode': 0, 'max_mode': 0, 'target_mode': 0})
-        data.update({'min_key': 6, 'max_key': 11})
-        data.update({'min_tempo': 100})
+        # data.update({'min_energy': 0.6, 'max_energy': 1, 'target_energy': 0.8})
+        # data.update({'min_valence': 0.6, 'max_valence': 1, 'target_valence': 0.8})
+        # # data.update({'min_loudness': '-60', 'max_loudness': '-20', 'target_loudness': -45})
+        # data.update({'min_mode': 0, 'max_mode': 0, 'target_mode': 0})
+        # data.update({'min_key': 6, 'max_key': 11})
+        # data.update({'min_tempo': 100})
+        data.update({'target_energy': 0.8})
+        data.update({'target_valence': 0.8})
+        data.update({'target_loudness': -40})
+        data.update({'target_mode': 0})
+        data.update({'target_key': 9})
+        data.update({'target_tempo': 140})
 
     elif emotion == 'disgust':
-        data.update({'min_energy': 0.5, 'max_energy': 0.8, 'target_energy': 0.65})
-        data.update({'min_valence': 0, 'max_valence': 0.4, 'target_valence': 0.1})
-        data.update({'min_mode': 0, 'max_mode': 0, 'target_mode': 0})
-        data.update({'max_tempo': 100})
+        # data.update({'min_energy': 0.5, 'max_energy': 0.8, 'target_energy': 0.65})
+        # data.update({'min_valence': 0, 'max_valence': 0.4, 'target_valence': 0.1})
+        # data.update({'min_mode': 0, 'max_mode': 0, 'target_mode': 0})
+        # data.update({'max_tempo': 100})
+        data.update({'target_energy': 0.65})
+        data.update({'target_valence': 0.15})
+        data.update({'target_mode': 0})
+        data.update({'target_tempo': 60})
 
     elif emotion == 'fear':
-        data.update({'min_energy': 0.5, 'max_energy': 0.95, 'target_energy': 0.75})
-        data.update({'min_valence': 0, 'max_valence': 0.4, 'target_valence': 0.2})
-        # data.update({'min_loudness': -15, 'max_loudness': 0, 'target_loudness': -7})
-        data.update({'min_key': 6, 'max_key': 11})
-        data.update({'min_tempo': 100})
+        # data.update({'min_energy': 0.5, 'max_energy': 0.95, 'target_energy': 0.75})
+        # data.update({'min_valence': 0, 'max_valence': 0.4, 'target_valence': 0.2})
+        # # data.update({'min_loudness': -15, 'max_loudness': 0, 'target_loudness': -7})
+        # data.update({'min_key': 6, 'max_key': 11})
+        # data.update({'min_tempo': 100})
+        data.update({'target_energy': 0.7})
+        data.update({'target_valence': 0.2})
+        data.update({'target_loudness': -7})
+        data.update({'target_key': 9})
+        data.update({'target_tempo': 140})
 
     elif emotion == 'happy':
-        data.update({'min_energy': 0.6, 'max_energy': 1, 'target_energy': 0.8})
-        data.update({'min_valence': 0.6, 'max_valence': 1, 'target_valence': 0.95})
-        data.update({'min_mode': 1, 'max_mode': 1, 'target_mode': 1})
-        data.update({'min_key': 0, 'max_key': 6})
-        data.update({'min_tempo': 100})
+        # data.update({'min_energy': 0.6, 'max_energy': 1, 'target_energy': 0.8})
+        # data.update({'min_valence': 0.6, 'max_valence': 1, 'target_valence': 0.95})
+        # data.update({'min_mode': 1, 'max_mode': 1, 'target_mode': 1})
+        # data.update({'min_key': 0, 'max_key': 6})
+        # data.update({'min_tempo': 100})
+        data.update({'target_energy': 0.8})
+        data.update({'target_valence': 0.95})
+        data.update({'target_mode': 1})
+        data.update({'target_key': 3})
+        data.update({'target_tempo': 120})
 
     elif emotion == 'neutral':
-        data.update({'min_energy': 0, 'max_energy': 0.5})
-        data.update({'min_valence': 0.3, 'max_valence': 0.8})
-        # data.update({'min_loudness': -10, 'max_loudness': 0, 'target_loudness': -3})
-        data.update({'min_key': 0, 'max_key': 7})
-        data.update({'min_tempo': 20, 'max_tempo': 100})
+        # data.update({'min_energy': 0, 'max_energy': 0.5})
+        # data.update({'min_valence': 0.3, 'max_valence': 0.8})
+        # # data.update({'min_loudness': -10, 'max_loudness': 0, 'target_loudness': -3})
+        # data.update({'min_key': 0, 'max_key': 7})
+        # data.update({'min_tempo': 20, 'max_tempo': 100})
+        data.update({'target_energy': 0.25})
+        data.update({'target_valence': 0.5})
+        data.update({'target_loudness': -3})
+        data.update({'target_key': 4})
+        data.update({'target_tempo': 65})
 
     elif emotion == 'sad':
-        data.update({'min_energy': 0.1, 'max_energy': 0.6})
-        data.update({'min_valence': 0, 'max_valence': 0.3})
-        # data.update({'min_loudness': -15, 'max_loudness': 0, 'target_loudness': -7})
-        data.update({'min_mode': 0, 'max_mode': 0, 'target_mode': 0})
-        data.update({'min_key': 0, 'max_key': 6})
-        data.update({'max_tempo': 100})
+        # data.update({'min_energy': 0.1, 'max_energy': 0.6})
+        # data.update({'min_valence': 0, 'max_valence': 0.3})
+        # # data.update({'min_loudness': -15, 'max_loudness': 0, 'target_loudness': -7})
+        # data.update({'min_mode': 0, 'max_mode': 0, 'target_mode': 0})
+        # data.update({'min_key': 0, 'max_key': 6})
+        # data.update({'max_tempo': 100})
+        data.update({'target_energy': 0.3})
+        data.update({'target_valence': 0})
+        data.update({'target_loudness': -5})
+        data.update({'target_mode': 0})
+        data.update({'target_key': 2})
+        data.update({'target_tempo': 70})
 
     elif emotion == 'surprise':
-        data.update({'min_energy': 0.4, 'max_energy': 0.8, 'target_energy': 0.6})
-        data.update({'min_valence': 0.1, 'max_valence': 0.3, 'target_valence': 0.2})
-        data.update({'min_key': 6, 'max_key': 11})
-        data.update({'min_tempo': 100})
+        # data.update({'min_energy': 0.4, 'max_energy': 0.8, 'target_energy': 0.6})
+        # data.update({'min_valence': 0.1, 'max_valence': 0.3, 'target_valence': 0.2})
+        # data.update({'min_key': 6, 'max_key': 11})
+        # data.update({'min_tempo': 100})
+        data.update({'target_energy': 0.6})
+        data.update({'target_valence': 0.2})
+        data.update({'target_key': 8})
+        data.update({'target_tempo': 130})
 
 
 def get_recommendation_request_parameters(parameters) -> dict:
@@ -330,7 +373,6 @@ def get_recommendation_request_parameters(parameters) -> dict:
 
     set_emotion_parameters(parameters['emotion'], data)
 
-    # print(data)
     return data
 
 
@@ -364,7 +406,6 @@ def get_recommendations(parameters) -> list:
             'id': track['id'],
             'uri': track['uri']
         })
-
 
     return tracks
 

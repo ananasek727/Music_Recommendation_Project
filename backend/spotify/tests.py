@@ -4,6 +4,8 @@ from . import SCOPES
 from django.utils import timezone
 from datetime import timedelta
 import yaml
+import random
+import string
 # Create your tests here.
 
 
@@ -305,6 +307,16 @@ class NoRealUserTestCase(TestCase):
                         'personalization': 'medium',
                         'popularity': 'medium',
                         'genres': ['pop', 'jazz']}
+        request = self.factory.post('create_playlist_based_on_parameters', request_data)
+        response = PlaylistBasedOnParametersView.as_view({'post': 'create'})(request)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('Invalid request', response.data['message'])
+
+    def test_create_playlist_based_on_parameters_invalid_request_no_genre(self):
+        request_data = {'emotion': 'sadness',
+                        'personalization': 'medium',
+                        'popularity': 'medium',
+                        'genres': []}
         request = self.factory.post('create_playlist_based_on_parameters', request_data)
         response = PlaylistBasedOnParametersView.as_view({'post': 'create'})(request)
         self.assertEqual(response.status_code, 400)
@@ -847,10 +859,10 @@ class SpotifyUserLoggedInTestCase(TestCase):
 
     def test_create_playlist_based_on_parameters_success(self):
 
-        request_data = {'emotion': 'happy',
-                        'personalization': 'low',
-                        'popularity': 'medium',
-                        'genres': ['pop', 'jazz']}
+        request_data = {"emotion": "happy",
+                        "personalization": "medium",
+                        "popularity": "mainstream",
+                        "genres": ["pop"]}
         request = self.factory.post('create_playlist_based_on_parameters', request_data)
         response = PlaylistBasedOnParametersView.as_view({'post': 'create'})(request)
         self.assertEqual(response.status_code, 200)
@@ -859,18 +871,20 @@ class SpotifyUserLoggedInTestCase(TestCase):
 
     def test_save_playlist_success(self):
         # create playlist
-        request_data = {'emotion': 'happy',
-                        'personalization': 'low',
-                        'popularity': 'high',
-                        'genres': ['pop', 'jazz']}
+        request_data = {"emotion": "happy",
+                        "personalization": "medium",
+                        "popularity": "mainstream",
+                        "genres": ["pop"]}
         request = self.factory.post('create_playlist_based_on_parameters', request_data)
         response = PlaylistBasedOnParametersView.as_view({'post': 'create'})(request)
         self.assertEqual(response.status_code, 200)
 
         # save created playlist
-        request_data = {'name': 'playlist'}
+        playlist_name = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(12))
+        request_data = {'name': playlist_name}
         request = self.factory.post('save_playlist', request_data)
         response = SavePlaylistView.as_view({'post': 'create'})(request)
+
         self.assertEqual(response.status_code, 200)
         self.assertIn('Playlist saved successfully', response.data['message'])
 
