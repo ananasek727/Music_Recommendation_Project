@@ -1,117 +1,38 @@
-import {configure} from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-import MusicControl from "../MusicControl";
-import {shallow} from 'enzyme';
+import React from 'react';
+import {render, screen} from '@testing-library/react';
+import '@testing-library/jest-dom/extend-expect';
+import MusicControl from '../MusicControl';
 
-configure({adapter: new Adapter()});
-it('should render a div with class \'MusicControlFrame\'', () => {
-    const playlist = {
-        name: "My Playlist",
-        songs: [
-            {
-                title: "Song 1",
-                artist: "Artist 1",
-                duration: 200,
-                image_url: "image1.jpg",
-                id: "1",
-                uri: "1",
-            },
-            {
-                title: "Song 2",
-                artist: "Artist 2",
-                duration: 180,
-                image_url: "image2.jpg",
-                id: "2",
-                uri: "2",
-            },
-            {
-                title: "Song 3",
-                artist: "Artist 3",
-                duration: 220,
-                image_url: "image3.jpg",
-                id: "3",
-                uri: "3",
-            },
-        ]
-    };
+const mockProps = {
+  playlist: {
+    data: [{
+        title: 'Example Song',
+        artist_str: 'Example Artist',
+        duration: 240, // Duration in seconds (4 minutes)
+        image_url: 'https://example.com/song-image.jpg',
+        id: '123456789', // Unique identifier for the song
+        uri: 'spotify:track:abcdefg123456', // Spotify URI for the song
+    }],
+  },
+  recommendedPlaylist: [], // Mock recommendedPlaylist as needed
+  playlistSongsURI: [], // Mock playlistSongsURI as needed
+  isPlaylistEmpty: false, // Mock isPlaylistEmpty as needed
+  playlistChangeGuard: jest.fn(), // Mock playlistChangeGuard as needed
+  setIsLoggedInSpotify: jest.fn(), // Mock setIsLoggedInSpotify as needed
+};
+describe('MusicControl Component', () => {
+  it('renders without crashing', () => {
+    render(<MusicControl {...mockProps} />);
+  });
+  it('renders music controlel', () => {
+    render(<MusicControl {...mockProps} />);
+    const musicControler = screen.getByText('Play track');
+    expect(musicControler).toBeInTheDocument();
+  });
 
-    const wrapper = shallow(<MusicControl playlist={playlist}/>);
-    expect(wrapper.find('.MusicControlFrame')).toHaveLength(1);
-});
-it('should render a div with class \'MusicControlPlaylistHolder\'', () => {
-    const playlist = {
-        name: "My Playlist",
-        songs: [
-            {
-                title: "Song 1",
-                artist: "Artist 1",
-                duration: 200,
-                image_url: "image1.jpg",
-                id: "1",
-                uri: "1",
-            },
-            {
-                title: "Song 2",
-                artist: "Artist 2",
-                duration: 180,
-                image_url: "image2.jpg",
-                id: "2",
-                uri: "2",
-            },
-            {
-                title: "Song 3",
-                artist: "Artist 3",
-                duration: 220,
-                image_url: "image3.jpg",
-                id: "3",
-                uri: "3",
-            },
-        ]
-    };
-
-    const wrapper = shallow(<MusicControl playlist={playlist}/>);
-    expect(wrapper.find('.MusicControlPlaylistHolder')).toHaveLength(1);
-});
-it('should render a div with class \'MusicControlPlaybackHolder\'', () => {
-    const playlist = {
-        name: "My Playlist",
-        songs: [
-            {
-                title: "Song 1",
-                artist: "Artist 1",
-                duration: 200,
-                image_url: "image1.jpg",
-                id: "1",
-                uri: "1",
-            },
-            {
-                title: "Song 2",
-                artist: "Artist 2",
-                duration: 180,
-                image_url: "image2.jpg",
-                id: "2",
-                uri: "2",
-            },
-            {
-                title: "Song 3",
-                artist: "Artist 3",
-                duration: 220,
-                image_url: "image3.jpg",
-                id: "3",
-                uri: "3",
-            },
-        ]
-    };
-
-    const wrapper = shallow(<MusicControl playlist={playlist}/>);
-    expect(wrapper.find('.MusicControlPlaybackHolder')).toHaveLength(1);
-});
-it('should not render a PlaylistElement if the playlist is empty', () => {
-    const playlist = {
-        name: "My Playlist",
-        songs: []
-    };
-
-    const wrapper = shallow(<MusicControl playlist={playlist}/>);
-    expect(wrapper.find('PlaylistElement')).toHaveLength(0);
+  it('renders playlist element', () => {
+    render(<MusicControl {...mockProps} />);
+    const playlistElement = screen.getByTestId('playlist-element');
+    expect(playlistElement).toBeInTheDocument();
+  });
 });

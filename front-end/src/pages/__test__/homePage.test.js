@@ -1,14 +1,56 @@
-import {shallow} from 'enzyme';
 import HomePage from "../HomePage";
-import {configure, mount} from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import React from 'react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
 
-configure({adapter: new Adapter()});
+// Manually mock the fetch function
+global.fetch = jest.fn();
 
-    it('should render the home page frame with a description and a music recommendation button', () => {
-      const wrapper = shallow(<HomePage />);
-      expect(wrapper.find('.homePageFrame')).toHaveLength(1);
-      expect(wrapper.find('.homePageDescription')).toHaveLength(1);
-      expect(wrapper.find('.homePageButton')).toHaveLength(1);
+describe('HomePage', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+  it('renders correctly', async () => {
+    render(
+      <BrowserRouter>
+        <HomePage setIsLoggedInSpotify={() => {}} />
+      </BrowserRouter>
+    );
+
+    // Ensure that the component renders without crashing
+    expect(screen.getByText(/Description/i)).toBeInTheDocument();
+  });
+  it('handles Spotify login',  () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => ({ url: "test" }),
     });
 
+    render(
+      <BrowserRouter>
+        <HomePage setIsLoggedInSpotify={() => {}} />
+      </BrowserRouter>
+    );
+    fireEvent.click(screen.getByText("Log in"));
+
+    expect(fetch).toHaveBeenCalledWith('http://127.0.0.1:8000/get-auth-url', {
+      method: 'GET',
+    });
+  });
+    it('handles token access',  () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => ({ url: "test" }),
+    });
+
+    render(
+      <BrowserRouter>
+        <HomePage setIsLoggedInSpotify={() => {}} />
+      </BrowserRouter>
+    );
+    fireEvent.click(screen.getByText("Log in"));
+    expect(fetch).toHaveBeenCalledWith('http://127.0.0.1:8000/access-token', {
+      method: 'GET',
+    });
+  });
+});

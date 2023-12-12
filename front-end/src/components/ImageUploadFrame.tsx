@@ -46,7 +46,7 @@ function ImageUploadFrame  (props: any)  {
         <div >
             <button className={styles.imageUploadFrameBox} onClick={()=>{props.setImgDecision(0);}}>Back</button>
            {props.imgSrc === null ? (
-            <input className={styles.imageUploadFrameBox}
+            <input data-testid="input-file" className={styles.imageUploadFrameBox}
                     type="file"
                     accept="image/*"
                     onChange={handleImageChange}

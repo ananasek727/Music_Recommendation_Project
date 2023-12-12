@@ -37,7 +37,7 @@ function MusicParameters  (props: any)  {
 
     // get recommended playlist
     const handlePlaylistRecommendation = async () => {
-      
+
         await fetch(`http://127.0.0.1:8000/create-playlist-based-on-parameters`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -65,9 +65,9 @@ function MusicParameters  (props: any)  {
               })
               .catch((e) => {
                 console.log("Error when trying to get recommended playlist: " + e);
-              });       
+              });
       }
-    
+
     const handleChangePopularity = (event: SelectChangeEvent) => {
         props.setMusicParameter1(event.target.value);
     };
@@ -93,6 +93,7 @@ function MusicParameters  (props: any)  {
             <FormControl sx={{ m: 1, minWidth: 130 }} size="small">
               <InputLabel>Popularity</InputLabel>
               <Select
+                data-testid="popularity-select"
                 value={props.musicParameter1}
                 label="Popularity"
                 onChange={handleChangePopularity}
@@ -113,8 +114,9 @@ function MusicParameters  (props: any)  {
             </select> */}
             {/* Personalization level */}
             <FormControl sx={{ m: 1, minWidth: 160 }} size="small">
-              <InputLabel>Personalization</InputLabel>
+              <InputLabel >Personalization</InputLabel>
               <Select
+                data-testid="personalization-select"
                 value={props.musicParameter2}
                 label="Personalization"
                 onChange={handleChangePersonalization}
@@ -137,6 +139,7 @@ function MusicParameters  (props: any)  {
             <FormControl sx={{ m: 1, minWidth: 100 }} size="small">
             <InputLabel>Genres</InputLabel>
             <Select
+              data-testid="genres-select"
               multiple
               value={props.musicParameter3}
               onChange={handleChangeGenres}
@@ -154,7 +157,7 @@ function MusicParameters  (props: any)  {
               ))}
             </Select>
             </FormControl>
-            {(props.musicParameter1 != '' && props.musicParameter2 != '' && props.musicParameter3.length > 0 && props.detectedEmotion != '') ? 
+            {(props.musicParameter1 != '' && props.musicParameter2 != '' && props.musicParameter3.length > 0 && props.detectedEmotion != '') ?
             <button className={styles.MusicParametersButton} onClick={handlePlaylistRecommendation}>Recommend music</button>
             :
             <button className={styles.MusicParametersButton} onClick={handlePlaylistRecommendation} disabled={true}>Recommend music</button>
@@ -162,5 +165,5 @@ function MusicParameters  (props: any)  {
         </div>
     )
   };
-  
+
   export default MusicParameters;

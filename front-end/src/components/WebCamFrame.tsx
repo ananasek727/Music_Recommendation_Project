@@ -52,7 +52,7 @@ function WebCamFrame  (props: any)  {
                 {props.imgSrc ? (
                     <img className={styles.WebCamFrameImg} src={props.imgSrc} style={{maxWidth: props.width, maxHeight: props.height}}/> 
                 ) : (
-                    <Webcam height={props.height} width={props.width} ref={webcamRef} mirrored={true}/>
+                    <Webcam data-testid="webcam-component" height={props.height} width={props.width} ref={webcamRef} mirrored={true}/>
                 )}
             </div>
             <div className="btn-container">
