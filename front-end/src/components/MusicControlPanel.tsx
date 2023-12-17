@@ -170,7 +170,7 @@ function MusicControlPanel  (props: any)  {
     const playTrack = async () => {
       // if played for the first time in the app, playback is transfered to this app and recommended songs are added to queue, as playTrack button is disabled when playlist is not recommneded yet
         if(!isPlaybackTransferred){
-            await fetch(`http://127.0.0.1:8000/player/tranfer-playback`, {
+            await fetch(`http://127.0.0.1:8000/player/transfer-playback`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json", },
