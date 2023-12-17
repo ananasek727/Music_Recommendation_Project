@@ -1,22 +1,25 @@
 from django.shortcuts import redirect
-from .util import (execute_spotify_api_request, delete_spotify_tokens, create_spotify_token,
-                   get_recommendations, delete_songs, save_playlist, get_currently_playing_song, add_songs_to_queue,
-                   player_next, player_pause, player_play, player_transfer_playback, player_set_volume,
-                   refresh_spotify_token, is_authenticated, get_access_token, get_refresh_token)
-from .credentials import REDIRECT_URI, CLIENT_ID
-from rest_framework.views import APIView
 from requests import Request
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, viewsets
+
 from .models import SpotifyToken, Song
-from rest_framework import viewsets
 from .serializers import (ParametersSerializer, SavePlaylistSerializer, AddItemsToQueueSerializer, DeviceIdSerializer,
                           VolumeSerializer)
-from . import SCOPES
+from .utils.credentials import REDIRECT_URI, CLIENT_ID
+from .utils.constant_parameters import SCOPES
+from .utils.execute_spotify_request import execute_spotify_api_request, RequestType
+from .utils.spotify_token_functions import (delete_spotify_tokens, create_spotify_token, refresh_spotify_token,
+                                            get_refresh_token, get_access_token, is_authenticated)
+from .utils.song_functions import delete_songs
+from .utils.player_requests import (get_currently_playing_song, add_songs_to_queue, player_next, player_pause,
+                                    player_play, player_transfer_playback, player_set_volume)
+from .utils.playlist_requests import save_playlist
+from .utils.recommendation_requests import get_recommendations
 
 
-class AuthURL(APIView):
-    def get(self, request, format=None):
+class AuthURL(viewsets.ModelViewSet):
+    def list(self, request, *args, **kwargs):
         url = Request('GET', 'https://accounts.spotify.com/authorize', params={
             'scope': SCOPES,
             'response_type': 'code',
@@ -67,8 +70,8 @@ class RefreshToken(viewsets.ModelViewSet):
         return Response({'message': 'Token successfully refreshed.'}, status=status.HTTP_200_OK)
 
 
-class Logout(APIView):
-    def delete(self, request, format=None):
+class Logout(viewsets.ModelViewSet):
+    def destroy(self, request, *args, **kwargs):
         if not SpotifyToken.objects.exists():
             return Response({'message': 'User not logged in.'}, status=status.HTTP_200_OK)
 
@@ -81,14 +84,14 @@ class Logout(APIView):
                          'url': 'https://www.spotify.com/fr/logout'}, status=status.HTTP_200_OK)
 
 
-class UserInfo(APIView):
-    def get(self, request, format=None):
+class UserInfo(viewsets.ModelViewSet):
+    def list(self, request, *args, **kwargs):
         if not is_authenticated():
             return Response({'message': 'User not authenticated.'}, status=status.HTTP_401_UNAUTHORIZED)
 
         try:
             endpoint = "me/"
-            response = execute_spotify_api_request(endpoint)
+            response = execute_spotify_api_request(endpoint=endpoint, request_type=RequestType.GET)
             return Response(response, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'message': f'Error occurred: {e}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -148,8 +151,8 @@ class SavePlaylistView(viewsets.ModelViewSet):
         return Response({'message': 'Playlist saved successfully.'}, status=status.HTTP_200_OK)
 
 
-class CurrentlyPlayingSongView(APIView):
-    def get(self, request, format=None):
+class CurrentlyPlayingSongView(viewsets.ModelViewSet):
+    def list(self, request, *args, **kwargs):
         if not is_authenticated():
             return Response({'message': 'User not authenticated.'}, status=status.HTTP_401_UNAUTHORIZED)
 

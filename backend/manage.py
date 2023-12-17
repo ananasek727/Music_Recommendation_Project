@@ -2,10 +2,13 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+import tensorflow
+import logging
 
 
 def main():
     """Run administrative tasks."""
+    tensorflow.get_logger().setLevel(logging.ERROR)
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
     try:
         from django.core.management import execute_from_command_line

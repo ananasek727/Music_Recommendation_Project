@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.core.validators import MinValueValidator, MaxValueValidator
-from . import POPULARITY_CHOICES, PERSONALIZATION_CHOICES, EMOTIONS
+
+from .utils.constant_parameters import POPULARITY_CHOICES, PERSONALIZATION_CHOICES, EMOTIONS
 
 
 class ParametersSerializer(serializers.Serializer):

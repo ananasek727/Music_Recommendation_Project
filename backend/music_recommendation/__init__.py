@@ -1,10 +1,6 @@
 import os
 import tensorflow
 import cv2
-import warnings
-
-# Ignore all warnings globally
-warnings.filterwarnings("ignore")
 
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "../static/model")
 PROTOTXT_PATH = os.path.join(os.path.dirname(__file__), "../static/deploy.prototxt")

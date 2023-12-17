@@ -1,11 +1,19 @@
-from django.test import TestCase, RequestFactory
-from .views import *
-from . import SCOPES
-from django.utils import timezone
-from datetime import timedelta
 import yaml
 import random
 import string
+from datetime import timedelta
+
+
+from django.test import TestCase, RequestFactory
+from django.utils import timezone
+
+from .views import (AuthURL, IsAuthenticated, AccessToken, RefreshToken, Logout, UserInfo,
+                    PlaylistBasedOnParametersView, SavePlaylistView, CurrentlyPlayingSongView, PlayerQueueView,
+                    PlayerNextView, PlayerPauseView, PlayerPlayView, PlayerTransferPlaybackView, PlayerSetVolumeView)
+from .models import SpotifyToken
+from .utils.constant_parameters import SCOPES
+
+
 # Create your tests here.
 
 
@@ -18,31 +26,31 @@ class NoRealUserTestCase(TestCase):
 
     def test_is_get_auth_url_post_fail(self):
         request = self.factory.post('is_authenticated')
-        response = AuthURL.as_view()(request)
+        response = AuthURL.as_view({'get': 'list'})(request)
         self.assertEqual(response.status_code, 405)
         self.assertIn('method_not_allowed', str(response.data))
 
     def test_is_get_auth_url_put_fail(self):
         request = self.factory.put('is_authenticated')
-        response = AuthURL.as_view()(request)
+        response = AuthURL.as_view({'get': 'list'})(request)
         self.assertEqual(response.status_code, 405)
         self.assertIn('method_not_allowed', str(response.data))
 
     def test_is_get_auth_url_delete_fail(self):
         request = self.factory.delete('is_authenticated')
-        response = AuthURL.as_view()(request)
+        response = AuthURL.as_view({'get': 'list'})(request)
         self.assertEqual(response.status_code, 405)
         self.assertIn('method_not_allowed', str(response.data))
 
     def test_get_auth_url_link(self):
         request = self.factory.get('get_auth_url')
-        response = AuthURL.as_view()(request)
+        response = AuthURL.as_view({'get': 'list'})(request)
         self.assertEqual(response.status_code, 200)
         self.assertIn('https://accounts.spotify.com/authorize', response.data['url'])
 
     def test_get_auth_url_scopes(self):
         request = self.factory.get('get_auth_url')
-        response = AuthURL.as_view()(request)
+        response = AuthURL.as_view({'get': 'list'})(request)
         self.assertEqual(response.status_code, 200)
         self.assertIn(SCOPES.replace(' ', '+'), response.data['url'])
 
@@ -200,25 +208,25 @@ class NoRealUserTestCase(TestCase):
 
     def test_logout_get_fail(self):
         request = self.factory.get('logout')
-        response = Logout.as_view()(request)
+        response = Logout.as_view({'delete': 'destroy'})(request)
         self.assertEqual(response.status_code, 405)
         self.assertIn('method_not_allowed', str(response.data))
 
     def test_logout_post_fail(self):
         request = self.factory.post('logout')
-        response = Logout.as_view()(request)
+        response = Logout.as_view({'delete': 'destroy'})(request)
         self.assertEqual(response.status_code, 405)
         self.assertIn('method_not_allowed', str(response.data))
 
     def test_logout_put_fail(self):
         request = self.factory.put('logout')
-        response = Logout.as_view()(request)
+        response = Logout.as_view({'delete': 'destroy'})(request)
         self.assertEqual(response.status_code, 405)
         self.assertIn('method_not_allowed', str(response.data))
 
     def test_logout_user_not_logged_in(self):
         request = self.factory.delete('logout')
-        response = Logout.as_view()(request)
+        response = Logout.as_view({'delete': 'destroy'})(request)
         self.assertEqual(response.status_code, 200)
         self.assertIn('User not logged in', response.data['message'])
 
@@ -231,7 +239,7 @@ class NoRealUserTestCase(TestCase):
             token_type='type'
         ).save()
         request = self.factory.delete('logout')
-        response = Logout.as_view()(request)
+        response = Logout.as_view({'delete': 'destroy'})(request)
         self.assertEqual(response.status_code, 200)
         self.assertIn('Successfully logged out of Spotify', response.data['message'])
         self.assertIn('https://www.spotify.com/fr/logout', response.data['url'])
@@ -240,25 +248,25 @@ class NoRealUserTestCase(TestCase):
 
     def test_check_auth_post_fail(self):
         request = self.factory.post('check_auth')
-        response = UserInfo.as_view()(request)
+        response = UserInfo.as_view({'get': 'list'})(request)
         self.assertEqual(response.status_code, 405)
         self.assertIn('method_not_allowed', str(response.data))
 
     def test_check_auth_put_fail(self):
         request = self.factory.put('check_auth')
-        response = UserInfo.as_view()(request)
+        response = UserInfo.as_view({'get': 'list'})(request)
         self.assertEqual(response.status_code, 405)
         self.assertIn('method_not_allowed', str(response.data))
 
     def test_check_auth_delete_fail(self):
         request = self.factory.delete('check_auth')
-        response = UserInfo.as_view()(request)
+        response = UserInfo.as_view({'get': 'list'})(request)
         self.assertEqual(response.status_code, 405)
         self.assertIn('method_not_allowed', str(response.data))
 
     def test_check_auth_not_authenticated(self):
         request = self.factory.get('check_auth')
-        response = UserInfo.as_view()(request)
+        response = UserInfo.as_view({'get': 'list'})(request)
         self.assertEqual(response.status_code, 401)
         self.assertIn('User not authenticated', response.data['message'])
 
@@ -271,7 +279,7 @@ class NoRealUserTestCase(TestCase):
             token_type='type'
         ).save()
         request = self.factory.get('check_auth')
-        response = UserInfo.as_view()(request)
+        response = UserInfo.as_view({'get': 'list'})(request)
         self.assertEqual(response.status_code, 500)
         self.assertIn('Error occurred', response.data['message'])
 
@@ -410,25 +418,25 @@ class NoRealUserTestCase(TestCase):
 
     def test_currently_playing_song_post_fail(self):
         request = self.factory.post('currently_playing_song')
-        response = CurrentlyPlayingSongView.as_view()(request)
+        response = CurrentlyPlayingSongView.as_view({'get': 'list'})(request)
         self.assertEqual(response.status_code, 405)
         self.assertIn('method_not_allowed', str(response.data))
 
     def test_currently_playing_song_put_fail(self):
         request = self.factory.put('currently_playing_song')
-        response = CurrentlyPlayingSongView.as_view()(request)
+        response = CurrentlyPlayingSongView.as_view({'get': 'list'})(request)
         self.assertEqual(response.status_code, 405)
         self.assertIn('method_not_allowed', str(response.data))
 
     def test_currently_playing_song_delete_fail(self):
         request = self.factory.delete('currently_playing_song')
-        response = CurrentlyPlayingSongView.as_view()(request)
+        response = CurrentlyPlayingSongView.as_view({'get': 'list'})(request)
         self.assertEqual(response.status_code, 405)
         self.assertIn('method_not_allowed', str(response.data))
 
     def test_currently_playing_song_not_authenticated(self):
         request = self.factory.get('currently_playing_song')
-        response = CurrentlyPlayingSongView.as_view()(request)
+        response = CurrentlyPlayingSongView.as_view({'get': 'list'})(request)
         self.assertEqual(response.status_code, 401)
         self.assertIn('User not authenticated', response.data['message'])
 
@@ -442,7 +450,7 @@ class NoRealUserTestCase(TestCase):
         ).save()
 
         request = self.factory.get('currently_playing_song')
-        response = CurrentlyPlayingSongView.as_view()(request)
+        response = CurrentlyPlayingSongView.as_view({'get': 'list'})(request)
         self.assertEqual(response.status_code, 500)
         self.assertIn('Error occurred', response.data['message'])
 
@@ -852,13 +860,12 @@ class SpotifyUserLoggedInTestCase(TestCase):
 
     def test_check_auth_success(self):
         request = self.factory.get('check_auth')
-        response = UserInfo.as_view()(request)
+        response = UserInfo.as_view({'get': 'list'})(request)
         self.assertEqual(response.status_code, 200)
 
     # ============================= create_playlist_based_on_parameters ==============================
 
     def test_create_playlist_based_on_parameters_success(self):
-
         request_data = {"emotion": "happy",
                         "personalization": "medium",
                         "popularity": "mainstream",
@@ -892,7 +899,7 @@ class SpotifyUserLoggedInTestCase(TestCase):
 
     def test_currently_playing_song_success(self):
         request = self.factory.get('currently_playing_song')
-        response = CurrentlyPlayingSongView.as_view()(request)
+        response = CurrentlyPlayingSongView.as_view({'get': 'list'})(request)
         self.assertEqual(response.status_code, 200)
 
     # ========================================= player_queue =========================================

@@ -1,17 +1,16 @@
+import cv2
+import numpy as np
+import base64
+
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 
 from .serializers import PhotoRequestSerializer
-
-import cv2
-import numpy as np
-import base64
 from . import CONFIDENCE, net, emotion_model
 
 # Create your views here.
 
 
-# TODO: -> utils
 def get_face_photo_from_base64_image(base64_image: str) -> np.array:
     image_data = base64_image.split(',')[1]
     image_binary = base64.b64decode(image_data)

@@ -1,7 +1,8 @@
-from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 import base64
 import binascii
+
+from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 
 def validate_base64(value):
