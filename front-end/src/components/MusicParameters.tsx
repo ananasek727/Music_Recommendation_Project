@@ -68,6 +68,26 @@ function MusicParameters  (props: any)  {
               });
       }
 
+      // save playlist
+    const savePlaylist = async () => {
+      await fetch(`http://127.0.0.1:8000/save-playlist`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              "name": "Mus4You"
+            })
+          })
+          .then((response) => {
+            if (response.ok) return response.json();
+            else {
+              throw new Error("ERROR " + response.status);
+            }
+          })
+          .catch((e) => {
+          console.log("Error when trying to save playlist: " + e);
+          });   
+    }
+
     const handleChangePopularity = (event: SelectChangeEvent) => {
         props.setMusicParameter1(event.target.value);
     };
@@ -162,6 +182,7 @@ function MusicParameters  (props: any)  {
             :
             <button className={styles.MusicParametersButton} onClick={handlePlaylistRecommendation} disabled={true}>Recommend music</button>
             }
+            <button className={styles.MusicParametersButton} onClick={savePlaylist} disabled={props.isPlaylistEmpty}>Save playlist</button>
         </div>
     )
   };

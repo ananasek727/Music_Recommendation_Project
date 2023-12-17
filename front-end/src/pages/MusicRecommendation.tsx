@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Webcam from 'react-webcam';
 import WebCamFrame from '../components/WebCamFrame';
 import styles from './css/MusicRecommendationPage.module.css'
 import ImageUploadFrame from '../components/ImageUploadFrame';
@@ -109,7 +108,7 @@ function MusicRecommendationPage  (props: any)  {
               <div className={styles.mRPageBoxLeftText}>
                 Music recommendation parameters
               </div>
-              <MusicParameters musicParameter1={musicParameter1} musicParameter2={musicParameter2} musicParameter3={musicParameter3} setMusicParameter1={setMusicParameter1} setMusicParameter2={setMusicParameter2} setMusicParameter3={setMusicParameter3} detectedEmotion={detectedEmotion} setRecommendedPlaylist={setRecommendedPlaylist} setPlaylistSongURI={setPlaylistSongURI} setIsPlaylistEmpty={setIsPlaylistEmpty} setPlaylistChangeGuard={setPlaylistChangeGuard} playlistChangeGuard={playlistChangeGuard} />
+              <MusicParameters musicParameter1={musicParameter1} musicParameter2={musicParameter2} musicParameter3={musicParameter3} setMusicParameter1={setMusicParameter1} setMusicParameter2={setMusicParameter2} setMusicParameter3={setMusicParameter3} detectedEmotion={detectedEmotion} setRecommendedPlaylist={setRecommendedPlaylist} setPlaylistSongURI={setPlaylistSongURI} setIsPlaylistEmpty={setIsPlaylistEmpty} isPlaylistEmpty={isPlaylistEmpty} setPlaylistChangeGuard={setPlaylistChangeGuard} playlistChangeGuard={playlistChangeGuard} />
             </div>
           </div>
           {/* Music control section, right frame */}

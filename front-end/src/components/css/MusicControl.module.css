@@ -6,7 +6,6 @@
     max-height: 70vh;
     width: 100%;
     display: flex;
-    background-color: rgb(243, 243, 243);
     border-radius: 5px;
     flex-direction: column;
 }

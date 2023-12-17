@@ -15,6 +15,7 @@
 }
 
 .MusicParametersButton {
+    text-wrap: nowrap;
     padding: 5px 10px;
     margin: 10px;
     border-radius: 5px;

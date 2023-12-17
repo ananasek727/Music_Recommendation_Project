@@ -1,7 +1,7 @@
 .homePageFrame {
     height: 93vh;
     width: 100vw;
-    background-color: aqua;
+    background-color: #f8f9fa;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -12,9 +12,9 @@
     max-height: 70vh;
     min-width: 70vw;
     max-width: 70vw;
-    background-color: azure;
+    background-color: #e9ecef;
     border-radius: 5px;
-    border: 2px solid #d5d5d5;
+    border: 2px solid #dee2e6;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     position: relative;
 }

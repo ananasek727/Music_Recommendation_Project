@@ -3,7 +3,6 @@ import SongInterface from '../interface/SongInterface';
 import CurrentlyPlayingSongInterface from '../interface/CurrentlyPlayingSongInterface';
 import PlaylistInterface from '../interface/PlaylistInterface';
 import CurrentlyPlayingSong from './CurrentlyPlayingSong';
-//import { WebPlaybackSDK } from "react-spotify-web-playback-sdk";
 import styles from './css/MusicControlPanel.module.css';
 
 function MusicControlPanel  (props: any)  {
