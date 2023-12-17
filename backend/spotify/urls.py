@@ -20,7 +20,7 @@ urlpatterns = [
     path('player/next', PlayerNextView.as_view({'post': 'create'}), name='player_next'),
     path('player/pause', PlayerPauseView.as_view({'put': 'update'}), name='player_pause'),
     path('player/play', PlayerPlayView.as_view({'put': 'update'}), name='player_play'),
-    path('player/tranfer-playback', PlayerTransferPlaybackView.as_view({'put': 'update'}),
+    path('player/transfer-playback', PlayerTransferPlaybackView.as_view({'put': 'update'}),
          name='player_transfer_playback'),
     path('player/set-volume', PlayerSetVolumeView.as_view({'put': 'update'}),
          name='player_set_volume'),
