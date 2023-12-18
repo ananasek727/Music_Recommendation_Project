@@ -47,7 +47,6 @@ function WebCamFrame  (props: any)  {
 
     return (
         <>
-            <button className={styles.webCamFrameButton} onClick={()=>{props.setImgDecision(0);}}>Back</button>
             <div className={styles.WebCamFrameBox}>
                 {props.imgSrc ? (
                     <img className={styles.WebCamFrameImg} src={props.imgSrc} style={{maxWidth: props.width, maxHeight: props.height}}/> 
@@ -55,16 +54,19 @@ function WebCamFrame  (props: any)  {
                     <Webcam data-testid="webcam-component" height={props.height} width={props.width} ref={webcamRef} mirrored={true}/>
                 )}
             </div>
-            <div className="btn-container">
+            <button className={styles.webCamFrameButton} onClick={()=>{props.setImgDecision(0);}}>Back</button>
             {props.imgSrc ? (
                 <button className={styles.webCamFrameButton} onClick={retake}>Retake photo</button>
             ) : (
                 <button className={styles.webCamFrameButton} onClick={capture}>Take photo</button>
             )}
+            
+            <div className="btn-container">
+            
             </div>
             {props.detectedEmotion &&
             <div>
-                {props.detectedEmotion}
+                Emotion: {props.detectedEmotion}
             </div>
             }
         </>

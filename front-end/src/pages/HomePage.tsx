@@ -55,7 +55,7 @@ function HomePage  (props: any)  {
       <div className={styles.homePageFrame}>
           <div className={styles.homePageBox}>
             <div className={styles.homePageDescription}>
-                Description
+            Mus4You is an innovative music recommendation application designed to curate playlists tailored to your emotions, preferred genres, personalization level, and popularity preferences. With an intuitive interface and seamless integration with Spotify, Mus4You aims to elevate your music listening experience by delivering curated playlists that resonate with your mood and taste.
             </div>
             {token === null ? 
               <button onClick={handleSpotifyLogin} className={styles.homePageButton}>Log in</button>
