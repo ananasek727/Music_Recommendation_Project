@@ -81,9 +81,9 @@ function MusicRecommendationPage  (props: any)  {
           <div className={styles.mRPageBoxLeft}>
 
             {/* Emotion recognition part */}
-            <div className={styles.mRPageBoxLeftText}>
+            {/* <div className={styles.mRPageBoxLeftText}>
               Emotion recognition
-            </div>
+            </div> */}
 
             {/* User can decide whether wants to  take photo based on webcam or upload an image*/}
             {imgDecision === 0 && (
@@ -105,9 +105,9 @@ function MusicRecommendationPage  (props: any)  {
 
             {/*  Display music parameters choice */}
             <div className={styles.MRPageBoxLeftParametersFrame}>
-              <div className={styles.mRPageBoxLeftText}>
+              {/* <div className={styles.mRPageBoxLeftText}>
                 Music recommendation parameters
-              </div>
+              </div> */}
               <MusicParameters musicParameter1={musicParameter1} musicParameter2={musicParameter2} musicParameter3={musicParameter3} setMusicParameter1={setMusicParameter1} setMusicParameter2={setMusicParameter2} setMusicParameter3={setMusicParameter3} detectedEmotion={detectedEmotion} setRecommendedPlaylist={setRecommendedPlaylist} setPlaylistSongURI={setPlaylistSongURI} setIsPlaylistEmpty={setIsPlaylistEmpty} isPlaylistEmpty={isPlaylistEmpty} setPlaylistChangeGuard={setPlaylistChangeGuard} playlistChangeGuard={playlistChangeGuard} />
             </div>
           </div>
