@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'music_recommendation.apps.MusicRecommendationConfig',
+    'emotion_recognition.apps.EmotionRecognitionConfig',
     "rest_framework",
     "spotify.apps.SpotifyConfig",
     "corsheaders"
