@@ -2,7 +2,11 @@
 # Project of a music recommending application based on emotion recognition
 
 This project aims to develop a web application that recommends music based on emotion recognition from images. The emotion recognition part was implemented with the use of models of deep learning and the dataset, which consists of images from FER2013, KDEF and AffectNet. Models were trained to recognise seven different emotions: anger, disgust, fear, happiness, sadness, surprise and neutrality. The music recommendation part involved integrating the application with the Spotify streaming service and developing a music recommendation algorithm. The application was implemented using the React framework and Python Django framework.
-
+## Table of content
+- [Requirement](##Requirement)
+- [Installation](##Installation)
+- [Manual](##Manual)
+- [Credits](##Credits)
 ## Requirement
 
 Python 3.9, Node.js 20.10.0, Spotify Premium account, \
@@ -55,7 +59,7 @@ Additionally, it is necessary to manually enter the data used to interact with
 Spotify API in the ”test data.yml” file where detailed instructions are located in the
 ”/backend/spotify” folder.
 
-## Useage
+## Manual
 The user manual ia locamen in the PDF file "bachelor_thesis" in seccion 4.14
 
 ## Credits
