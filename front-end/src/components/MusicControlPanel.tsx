@@ -32,7 +32,6 @@ function MusicControlPanel  (props: any)  {
             })
             .then((data) => {
                 setToken(data.access_token);
-                console.log(data);
                 setNonEmptyToken(true);
                 props.setIsLoggedInSpotify(true);
             })
@@ -79,12 +78,10 @@ function MusicControlPanel  (props: any)  {
         setPlayer(player);
 
         player.addListener('ready', ({ device_id }) => {
-            console.log('Ready with Device ID', device_id);
             setDeviceID(device_id);
         });
 
         player.addListener('not_ready', ({ device_id }) => {
-            console.log('Device ID has gone offline', device_id);
         });
 
         player.connect();
@@ -230,7 +227,6 @@ function MusicControlPanel  (props: any)  {
                 })
                 .then((data) => {
                   setCurrentSong(data);
-                  console.log(data);
                 })
                 .catch((e) => {
                   console.log("Error when trying to fetch current song: " + e);

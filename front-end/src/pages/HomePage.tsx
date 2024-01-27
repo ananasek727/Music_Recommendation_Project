@@ -19,7 +19,6 @@ function HomePage  (props: any)  {
             })
             .then((data) => {
               setUrlSpotifyLog(data.url);
-              console.log(data);
               window.location.href = data.url;
             })
             .catch((e) => {
@@ -44,7 +43,6 @@ function HomePage  (props: any)  {
             })
             .then((data) => {
                 setToken(data.access_token);
-                console.log(data);
                 props.setIsLoggedInSpotify(true);
             })
             .catch((e) => {
@@ -55,6 +53,11 @@ function HomePage  (props: any)  {
       <div className={styles.homePageFrame}>
           <div className={styles.homePageBox}>
             <div className={styles.homePageDescription}>
+            Project of a music recommending application based on emotion recognition
+            <br/><br/>
+            Prepared as a part of bachelor's diploma thesis in the field of study Computer Science and Information Systems at the Warsaw University of Technology by Błażej Misiura, Piotr Możeluk and Justyna Pokora, supervisor
+            dr hab. inż. Jerzy Balicki, prof. ucz.
+            <br/><br/>
             Mus4You is an innovative music recommendation application designed to curate playlists tailored to your emotions, preferred genres, personalization level, and popularity preferences. With an intuitive interface and seamless integration with Spotify, Mus4You aims to elevate your music listening experience by delivering curated playlists that resonate with your mood and taste.
             </div>
             {token === null ? 

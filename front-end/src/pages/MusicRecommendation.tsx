@@ -45,36 +45,6 @@ function MusicRecommendationPage  (props: any)  {
   const [isPlaylistEmpty, setIsPlaylistEmpty] = React.useState(true);
   const [playlistChangeGuard, setPlaylistChangeGuard] = React.useState(false);
 
-  // const getRecommendedPlaylist = async () => {
-  //   await fetch(`http://127.0.0.1:8000/create-playlist-based-on-parameters`, {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({
-  //         "emotion": "sad",
-  //         "personalization": "high",
-  //         "popularity": "mainstream",
-  //         "genres": []
-  //       })
-  //       })
-  //       .then((response) => {
-  //           if (response.ok) return response.json();
-  //           else {
-  //             throw new Error("ERROR " + response.status);
-  //           }
-  //       })
-  //       .then((data)=>{
-  //         setRecommendedPlaylist(data);
-  //         console.log(data);
-  //         const allURI: string[] = data.data.map((item: { uri: any; }) => item.uri);
-  //         setPlaylistSongURI(allURI);
-  //         console.log(allURI);
-  //         setIsPlaylistEmpty(false);
-  //         setPlaylistChangeGuard(!playlistChangeGuard);
-  //       })
-  //       .catch((e) => {
-  //       console.log("Error when trying to get playlist with recommended playlist: " + e);
-  //       });
-  //   }
 
     return (
       <div className={styles.mRPageFrame}>
