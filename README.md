@@ -15,7 +15,7 @@ Requirements for the frontend are written in the file frontend/package.json
 
 ## Installation
 #### Train the model:
-This part is optional since models are already trained. To train the model one needs to open the file "ResNet50_based-model_training_validation" or "CNN_model_training_validation", change the path to the dataset, and run the whole Jupiter notebook.
+This part is optional since models are already trained. To train the model one needs to open the file "model/ResNet50_based-model_training_validation" or "model/CNN_model_training_validation", change the path to the dataset, and run the whole Jupiter notebook.
 
 #### Install the dependencies:
 ```sh
