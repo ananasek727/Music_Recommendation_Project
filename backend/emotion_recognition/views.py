@@ -18,7 +18,6 @@ def get_face_photo_from_base64_image(base64_image: str) -> np.array:
     image_array = cv2.imdecode(np.frombuffer(image_binary, np.uint8), cv2.IMREAD_COLOR)
     if image_array is None:
         raise Exception("Incorrect image encoding.")
-    # cv2.imwrite("original_image.jpg", image_array)
 
     (h, w) = image_array.shape[:2]
     blob = cv2.dnn.blobFromImage(
@@ -52,13 +51,11 @@ def get_face_photo_from_base64_image(base64_image: str) -> np.array:
         new_end_x = int(endX - 0.5 * crop_x)
 
         cropped_image_array = image_array[new_start_y:new_end_y, new_start_x:new_end_x]
-        # cv2.imwrite("cropped_image.jpg", cropped_image_array)
 
         face_image = cv2.resize(cropped_image_array,
                                 (48, 48),
                                 interpolation=cv2.INTER_AREA)
 
-        # cv2.imwrite("face_image.jpg", face_image)
         return face_image
 
     raise Exception("No face detected.")
@@ -70,10 +67,9 @@ def predicted_emotion(array):
 
 
 def get_emotion_from_image(image: np.array) -> str:
-    # TODO: size??? color? -> based on model
-    face_image = cv2.resize(image, (224, 224))
+    face_image = cv2.resize(image, (48, 48))
     face_image = cv2.cvtColor(face_image, cv2.COLOR_BGR2RGB)
-    face_image = face_image.reshape((1, 224, 224, 3))
+    face_image = face_image.reshape((1, 48, 48, 1))
     emotion = predicted_emotion(emotion_model.predict(x=face_image, verbose=0))
     return str(emotion)
 
