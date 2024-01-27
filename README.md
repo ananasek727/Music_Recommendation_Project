@@ -65,35 +65,35 @@ Spotify API in the ”test data.yml” file where detailed instructions are loca
 ### Getting started
 #### Step 1
 To get access to music recommendations you need to go to the home page and click on the login button.
-![alt text](pics/app_f1.png)
+![alt text](images/app_f1.png)
 #### Step 2
 You will be redirected to the Spotify web page where you have to enter your credential
 and log in.
-![alt text](pics/app_f2.png)
+![alt text](images/app_f2.png)
 #### Step 3
 After logging in, you will be redirected to the home page where you now have a 'Music recommendation'  button which will redirect you to the page where you can create and play your personalized playlist.
-![alt text](pics/app_f3.png)
+![alt text](images/app_f3.png)
 ### Music Recommendation
 Before creating the playlist you have to input the required data on the left side.
 #### Step 1 Emotion recognition
 Choose the way of sending an image by clicking on 'Web cam' 'Upload image' (from your device)
-![alt text](pics/app_f5.png)
+![alt text](images/app_f5.png)
 
 If you chose the webcam option please aim the camera at a face and click 'Take photo'. After that, you can always retake it using the 'Retake button'.
 If you choose to upload an image please click the 'Choose file' button and select a picture and click open. Then click the 'Predict emotion' button to get the predicted emotion. If you want to change it click on the 'Reupload image' button.
 #### Step 2 Parameters selection
 Select parameters by clicking on 'Popularity', 'Personalization', 'Genres' from the drop-down menu and select desired values.
-![alt text](pics/app6.png)
+![alt text](images/app6.png)
 #### Step 3 Create a playlist
 If you did every step correctly you should now be able to click on the 'Recommended music' button to get a personalized playlist.
-![alt text](pics/app7.png)
+![alt text](images/app7.png)
 #### Step 4 Saving the personalized playlist
 After creating a playlist there is the possibility to save it on your Spotify account by clicking the 'Save playlist' button which is situated next to the 'Recommend music' button
 ### Music player
 On the right side, there is the music player marked with a blue border. You can control
 the player using buttons and change the volume using the slider next to the buttons,
 marked in red.
-![alt text](pics/app9.png)
+![alt text](images/app9.png)
 
 ## Credits
 [Błażej Misiura](https://github.com/blazej-misiura)\
