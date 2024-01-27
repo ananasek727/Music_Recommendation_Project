@@ -10,10 +10,12 @@ This project aims to develop a web application that recommends music based on em
 ## Requirement
 
 Python 3.9, Node.js 20.10.0, Spotify Premium account, \
-Requirement for backend are written in file backend/requirement.txt \
-Requirement for frontend are written in file frontend/package.json
+Requirements for the backend are written in the file backend/requirement.txt \
+Requirements for the frontend are written in the file frontend/package.json
 
 ## Installation
+#### Train the model:
+This part is optional since models are already trained. To train the model one needs to open the file "ResNet50_based-model_training_validation" or "CNN_model_training_validation", change the path to the dataset, and run the whole Jupiter notebook.
 
 #### Install the dependencies:
 ```sh
@@ -69,7 +71,7 @@ You will be redirected to the Spotify web page where you have to enter your cred
 and log in.
 ![alt text](pics/app_f2.png)
 #### Step 3
-After logging in, you will be redirected to the home page where you have now a 'Music recommendation'  button which will redirect you to the page where you can create and play your personalized playlist.
+After logging in, you will be redirected to the home page where you now have a 'Music recommendation'  button which will redirect you to the page where you can create and play your personalized playlist.
 ![alt text](pics/app_f3.png)
 ### Music Recommendation
 Before creating the playlist you have to input the required data on the left side.
@@ -88,7 +90,7 @@ If you did every step correctly you should now be able to click on the 'Recommen
 #### Step 4 Saving the personalized playlist
 After creating a playlist there is the possibility to save it on your Spotify account by clicking the 'Save playlist' button which is situated next to the 'Recommend music' button
 ### Music player
-On the right side, there is the music player marked with blue border. You can control
+On the right side, there is the music player marked with a blue border. You can control
 the player using buttons and change the volume using the slider next to the buttons,
 marked in red.
 ![alt text](pics/app9.png)
