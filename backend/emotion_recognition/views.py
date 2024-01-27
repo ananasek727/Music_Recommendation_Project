@@ -68,7 +68,7 @@ def predicted_emotion(array):
 
 def get_emotion_from_image(image: np.array) -> str:
     face_image = cv2.resize(image, (48, 48))
-    face_image = cv2.cvtColor(face_image, cv2.COLOR_BGR2RGB)
+    face_image = cv2.cvtColor(face_image, cv2.COLOR_BGR2GRAY)
     face_image = face_image.reshape((1, 48, 48, 1))
     emotion = predicted_emotion(emotion_model.predict(x=face_image, verbose=0))
     return str(emotion)
