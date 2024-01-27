@@ -42,8 +42,9 @@ describe('ImageUploadFrame', () => {
   it('renders the detected emotion when available', () => {
     const detectedEmotion = 'happy';
     const { getByText } = render(<ImageUploadFrame detectedEmotion={detectedEmotion} />);
-
-    expect(getByText(detectedEmotion)).toBeInTheDocument();
+      const emotion = new RegExp(
+    'happy');
+  expect(screen.getByText(emotion)).toBeInTheDocument();
   });
 
   it('calls the provided callback when the "Back" button is clicked', () => {

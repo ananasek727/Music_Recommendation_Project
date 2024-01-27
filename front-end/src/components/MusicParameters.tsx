@@ -28,9 +28,22 @@ function getStyles(name: string, personName: string[], theme: Theme) {
 }
 
 const Genres = [
+  'alternative',
+  'blues',
+  'club',
+  'dance',
+  'edm',
+  'folk',
+  'hip-hop',
+  'house',
+  'indie-pop',
+  'jazz',
+  'metal',
   'pop',
+  'reggae',
   'rock',
-  'indie',
+  'soul',
+  'techno'
 ];
 
 function MusicParameters  (props: any)  {
@@ -56,10 +69,8 @@ function MusicParameters  (props: any)  {
               })
               .then((data) => {
                 props.setRecommendedPlaylist(data);
-                console.log(data);
                 const allURI: string[] = data.data.map((item: { uri: any; }) => item.uri);
                 props.setPlaylistSongURI(allURI);
-                console.log(allURI);
                 props.setIsPlaylistEmpty(false);
                 props.setPlaylistChangeGuard(!props.playlistChangeGuard);
               })
@@ -68,7 +79,7 @@ function MusicParameters  (props: any)  {
               });
       }
 
-      // save playlist
+    // save playlist
     const savePlaylist = async () => {
       await fetch(`http://127.0.0.1:8000/save-playlist`, {
           method: "POST",
@@ -99,11 +110,17 @@ function MusicParameters  (props: any)  {
     const [personName, setPersonName] = React.useState<string[]>([]);
     const theme = useTheme();
 
+    const [isLimitOfGenresAchieved, setIsLimitOfGenresAchieved] = React.useState(false);
+
     const handleChangeGenres = (event: SelectChangeEvent<typeof props.musicParameter3>) => {
       const {
         target: { value },
       } = event;
       props.setMusicParameter3(event.target.value);
+    };
+
+    const isGenreOptionDisabled = (option: any) => {
+      return props.musicParameter3.length >= 3 && !props.musicParameter3.includes(option);
     };
 
     return (
@@ -126,12 +143,7 @@ function MusicParameters  (props: any)  {
                 <MenuItem value="low">Low</MenuItem>
               </Select>
             </FormControl>
-            {/* <select className={styles.MusicParametersSelect} value={props.musicParameter1} onChange={handleChangePopularity}>
-                <option value="">Popularity</option>
-                <option value="mainstream">Mainstream</option>
-                <option value="medium">Medium</option>
-                <option value="low">Low</option>
-            </select> */}
+            
             {/* Personalization level */}
             <FormControl sx={{ m: 1, minWidth: 160 }} size="small">
               <InputLabel >Personalization</InputLabel>
@@ -149,12 +161,7 @@ function MusicParameters  (props: any)  {
                 <MenuItem value="low">Low</MenuItem>
               </Select>
             </FormControl>
-            {/* <select className={styles.MusicParametersSelect} value={props.musicParameter2} onChange={handleChangePersonalization}>
-                <option value="">Personalization</option>
-                <option value="high">High</option>
-                <option value="medium">Medium</option>
-                <option value="low">Low</option>
-            </select> */}
+            
             {/* Genres */}
             <FormControl sx={{ m: 1, minWidth: 100 }} size="small">
             <InputLabel>Genres</InputLabel>
@@ -171,6 +178,7 @@ function MusicParameters  (props: any)  {
                   key={genre}
                   value={genre}
                   style={getStyles(genre, props.musicParameter2, theme)}
+                  disabled={isGenreOptionDisabled(genre)}
                 >
                   {genre}
                 </MenuItem>

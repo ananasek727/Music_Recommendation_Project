@@ -21,7 +21,6 @@ function WebCamFrame  (props: any)  {
               })
               .then((data) => {
                 props.setDetectedEmotion(data.emotion);
-                console.log(data);
               })
               .catch((e) => {
                 console.log("Error when trying to get users emotion: " + e);

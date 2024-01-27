@@ -88,7 +88,9 @@ describe('webCam', () => {
         await act(async () => {
             render(<WebCamFrame detectedEmotion="Happy"/>);
         });
-        expect(screen.getByText('Happy')).toBeInTheDocument();
+        const emotion = new RegExp(
+    'Happy');
+        expect(screen.getByText(emotion)).toBeInTheDocument();
     });
 
     test('Retake function sets imgSrc to null', () => {

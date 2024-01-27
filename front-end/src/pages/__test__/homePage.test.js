@@ -27,9 +27,11 @@ describe('HomePage', () => {
                 </BrowserRouter>
             );
         });
-
+          const descriptionTextRegex = new RegExp(
+    'Mus4You is an innovative music recommendation application designed to curate playlists tailored to your emotions, preferred genres, personalization level, and popularity preferences. With an intuitive interface and seamless integration with Spotify, Mus4You aims to elevate your music listening experience by delivering curated playlists that resonate with your mood and taste.'
+          );
         // Ensure that the component renders without crashing
-        expect(screen.getByText(/Description/i)).toBeInTheDocument();
+        expect(screen.getByText(descriptionTextRegex)).toBeInTheDocument();
     });
     it('handles Spotify login', async () => {
         global.fetch = jest.fn();
